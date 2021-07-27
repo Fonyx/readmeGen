@@ -22,33 +22,24 @@ My mantra is that if it gets done, it gets done well, if it gets done twice, it 
 ## Usage
 ### 1. Run index.js entry point
 ### 2. Follow user prompts to build README.md file. Note you will need the local repository path  
-### 3. Prompts: 
-- local repo root path: absolute path eg "C:\Users\user\Documents\localProjectRepo"  
-We use this path to output the file and to read and verify project paths for resources (such as screenshots and package.json)  
-- readOrigin: [y/n]  
-y(yes) case derives the following from the origin repo  
-project title, profile (repo owner), collaborators  
--- NOTE: this only works for public repository's - otherwise it user will have to manually fill these in
-- readPackage: [y/n]  
-y(yes) case derives the following from the package.json file
-Description, license, dependencies  
-### Manual mode prompts - descending order of privilege 
-- project title: string, [readOrigin], [readPackage]  
-- profile name: string, [readOrigin], [readPackage]  
-- description: Long string, [readPackage] 
+### 3. Prompts - gather options appear in ascending order of privilege
+- local repo root path: UserInputAbsolutePath eg "C:\Users\user\Documents\localProjectRepo" * Required   
+- project title: [readPackage-name], [readOrigin-repoName], userInput  
+- project version: [readPackage-version], userInput  
+- profile name: [readPackage-author], [readOrigin-ownerProfile], userInput  
+- collaborators: [readOrigin-repoContributors], userInput  
+- description: [readPackage-description], UserInput  
+- dependencies: [readPackage-dependencies], UserInputCSV  
+- license: [readPackage-license], UserInputChoice  
 - project motivation: Long string  
 - installation: Long string  
-- dependencies: csv string or [readPackage]  
 - usage: long string  
-- screencapGif: relative path to gif
-<!-- https://docs.github.com/en/rest/reference/repos#list-repository-contributors -->
-- collaborators: 'string1, string2, string3", [readOrigin]  
-- credits: "string1, string2, string3"  
-- license: "str" choice from license list, [readPackage]  
-- features: "long string"  
-- how to contribute: "long string"  
-- tests: "long string"  
-
+- screencapGif: [readRepoStructure-path], UserInputRelativePathToGif  
+- credits: UserInput   
+- features: UserInput  
+- how to contribute: UserInput    
+- tests: [readPackage-scripts.test], UserInput  
+#### NOTE: if there is a package.json file but any of the readPackage.json commands find an empty value or a clashed value with the origin repo, console alert package.json doesn't match origin repo details
 
 <!-- ![alt text](assets/images/usageScreencap.gif); -->
 

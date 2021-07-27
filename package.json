@@ -9,8 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "git-repo-name": "^1.0.1",
     "inquirer": "^6.3.1",
+    "node-fetch": "^2.6.1",
     "read-pkg": "^6.0.0"
   }
 }
