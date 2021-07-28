@@ -20,13 +20,14 @@ class Question{
         this.packageValue = packageValue;
         this.originValue = originValue;
         this.userValue = userValue;
+        this.priorityMessage = '';
     }
 
     prompt(){
         inquirer.prompt({
             type: this.type,
-            message: this.message,
-            name: this.qname
+            message: this.priorityMessage,
+            name: this.qname,
         }).then((answer) => {
             this.answer = answer;
         }).catch((err) => {
@@ -47,8 +48,8 @@ class Readme{
     }
 
     askQuestions(){
-        for(let i = 0; i < this.questions.length; i++){
-            let currentQuestion = this.questions[i][1];
+        for (var qname in this.questions){
+            let currentQuestion = this.questions[qname];
             currentQuestion.prompt();
         }
     }
@@ -78,17 +79,30 @@ class Readme{
         /*
         A function that compares packageValue and originValue for all questions
         ignores comparison if either value is null - designed in to question construction
-        still applies comparison if values are 'undefined' as they could be here sometimes
+        still applies comparison if values are 'undefined' as they should be here regularly
         */
-        for (let [name, question] of this.questions){
+        console.log('bang')
+        for (var qname in this.questions){
             // check both values are valid for comparison
-            if (question.packageValue !== null && question.originValue !== null){
-                if(question.packageValue !== question.originValue){
-                    console.log(`Question: ${name} has inconsistent derived values between the origin repo: ${question.originValue} and the package.json: ${question.packageValue} which should be corrected. Right now, origin value takes priority, update your package.json`);
+            if (this.questions[qname].packageValue !== null && this.questions[qname].originValue !== null){
+                if(this.questions[qname].packageValue !== this.questions[qname].originValue){
+                    // https://stackoverflow.com/questions/9781218/how-to-change-node-jss-console-font-color
+                    console.log('\x1b[31m%s\x1b[0m', `${qname} has inconsistent derived values`);
+                    console.log('\x1b[31m%s\x1b[0m', `\tOriginRepo: ${this.questions[qname].originValue}`);
+                    console.log('\x1b[31m%s\x1b[0m', `\tPackage.json: ${this.questions[qname].packageValue}`);
+                    console.log('\x1b[31m%s\x1b[0m', '\tTake better care of your package file, for now, using the originRepo version, consult readme for more details');
                 }
             } else {
                 // question can't be compared
             }
+        }
+    }
+
+    createPriorityMessage(){
+        for (var qname in this.questions){
+            let curQ = this.questions[qname];
+            // makes a message out of the origin and package values
+            curQ.priorityMessage = (curQ.originValue !== null) ? curQ.originValue : curQ.packageValue;
         }
     }
 
@@ -130,7 +144,6 @@ class Readme{
        try{
            let rawPackage = fs.readFileSync(this.localRepoPath+'/package.json', {encoding:'utf-8', flag:'r'});
            let packageJson = JSON.parse(rawPackage);
-           console.log(packageJson);
 
             // set the packageValues for the corresponding question elements
             this.questions.projectTitle.packageValue = packageJson.name;
@@ -142,6 +155,9 @@ class Readme{
             this.questions.dependencies.packageValue = packageJson.dependencies;
 
             this.comparePackageToOrigin();
+            this.createPriorityMessage();
+            this.log_state();
+            this.askQuestions();
             
        }catch(error){
         console.log(error);
