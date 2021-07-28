@@ -10,24 +10,24 @@ class Question{
     Constructor will be passed an object with some arguments in it, then the constructor with destructure the
     results and set the internal values. It resorts to defaults for omitted results
     */
-    constructor({type, message, qname, choices=null, answer=undefined, required=true, packageValue=undefined, originValue=undefined, userValue=undefined}={}){
+    constructor({type, initMessage, name, choices=null, answer=undefined, required=true, packageValue=undefined, originValue=undefined, userValue=undefined}={}){
         this.type = type;
-        this.message = message;
-        this.qname = qname;
+        this.initMessage = initMessage;
+        this.message = '';
+        this.name = name;
         this.choices = choices;
         this.answer = answer;
         this.required = required;
         this.packageValue = packageValue;
         this.originValue = originValue;
         this.userValue = userValue;
-        this.priorityMessage = '';
     }
 
     prompt(){
         inquirer.prompt({
             type: this.type,
-            message: this.priorityMessage,
-            name: this.qname,
+            message: this.message,
+            name: this.name,
         }).then((answer) => {
             this.answer = answer;
         }).catch((err) => {
@@ -48,30 +48,43 @@ class Readme{
     }
 
     askQuestions(){
-        for (var qname in this.questions){
-            let currentQuestion = this.questions[qname];
-            currentQuestion.prompt();
-        }
+        // for (var name in this.questions){
+        //     let currentQuestion = this.questions[name];
+        //     currentQuestion.prompt();
+        // }
+        // for (let {name, question} in self.questions){
+
+        // }
+        let questionObjs = this.questions.map(function(currentValue){
+            return this.questions[currentValue.name];
+        })
+        inquirer.prompt(questionObjs)
+        .then((answers) => {
+            console.log(answers);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
     }
 
     buildQuestions(){
         // note the use of undefined as a question constructor default vs the use of null
         // null means this value cannot be determined - for use in downstream processes - whereas undefined means this will be determined
         this.questions = {
-            'projectTitle': new Question({type:'input',message:'Project Title?\n',qname:'projectTitle'}),
-            'version': new Question({type:'input',message:'Project Version?\n',qname:'version', originValue:null}),
-            'profileName': new Question({type:'input',message:'Profile name?\n',qname:'profileName'}),
-            'contributors': new Question({type:'input',message:'Add contributors/collaborators More(comma separated)\n',qname:'contributors', packageValue:null}),
-            'description': new Question({type:'input',message:'Project Description?\n',qname:'description'}),
-            'dependencies': new Question({type:'input',message:'Add Dependencies More(comma separated)\n',qname:'dependencies', originValue : null}),
-            'license': new Question({type:'input',message:'license type?\n',qname:'license', choices:['MIT', 'Unlicense', 'GNU']}),
-            'motivation': new Question({type:'editor',message:'What motivated the project, What problem does it solve?\n',qname:'motivation', originValue : null, packageValue:null, required:false}),
-            'installation': new Question({type:'editor',message:'Installation steps\n',qname:'installation', originValue : null, packageValue:null, required:false}),
-            'usage': new Question({type:'editor',message:'Usage\n',qname:'usage', originValue : null, packageValue:null, required:false}),
-            'credits': new Question({type:'input',message:'Add any people, tech or institutes to credit (comma separated)\n',qname:'credits', originValue : null, packageValue:null, required:false}),
-            'features': new Question({type:'editor',message:'What features does the project have?\n',qname:'features', originValue : null, packageValue:null, required:false}),
-            'contributing': new Question({type:'editor',message:'How to contribute to the project?\n',qname:'contributing', originValue : null, packageValue:null, required:false}),
-            'testing': new Question({type:'editor',message:'Project testing structure\n',qname:'testing', originValue : null, packageValue:null, required:false}),
+            'projectTitle': new Question({type:'input',initMessage:'Project Title?\n',name:'projectTitle'}),
+            'version': new Question({type:'input',initmessage:'Project Version?\n',name:'version', originValue:null}),
+            'profileName': new Question({type:'input',initmessage:'Profile name?\n',name:'profileName'}),
+            'contributors': new Question({type:'input',initmessage:'Add contributors/collaborators More(comma separated)\n',name:'contributors', packageValue:null}),
+            'description': new Question({type:'input',initmessage:'Project Description?\n',name:'description'}),
+            'dependencies': new Question({type:'input',initmessage:'Add Dependencies More(comma separated)\n',name:'dependencies', originValue : null}),
+            'license': new Question({type:'input',initmessage:'license type?\n',name:'license', choices:['MIT', 'Unlicense', 'GNU']}),
+            'motivation': new Question({type:'editor',initmessage:'What motivated the project, What problem does it solve?\n',name:'motivation', originValue : null, packageValue:null, required:false}),
+            'installation': new Question({type:'editor',initmessage:'Installation steps\n',name:'installation', originValue : null, packageValue:null, required:false}),
+            'usage': new Question({type:'editor',initmessage:'Usage\n',name:'usage', originValue : null, packageValue:null, required:false}),
+            'credits': new Question({type:'input',initmessage:'Add any people, tech or institutes to credit (comma separated)\n',name:'credits', originValue : null, packageValue:null, required:false}),
+            'features': new Question({type:'editor',initmessage:'What features does the project have?\n',name:'features', originValue : null, packageValue:null, required:false}),
+            'contributing': new Question({type:'editor',initmessage:'How to contribute to the project?\n',name:'contributing', originValue : null, packageValue:null, required:false}),
+            'testing': new Question({type:'editor',initmessage:'Project testing structure\n',name:'testing', originValue : null, packageValue:null, required:false}),
         }
     }
 
@@ -81,15 +94,14 @@ class Readme{
         ignores comparison if either value is null - designed in to question construction
         still applies comparison if values are 'undefined' as they should be here regularly
         */
-        console.log('bang')
-        for (var qname in this.questions){
+        for (var name in this.questions){
             // check both values are valid for comparison
-            if (this.questions[qname].packageValue !== null && this.questions[qname].originValue !== null){
-                if(this.questions[qname].packageValue !== this.questions[qname].originValue){
+            if (this.questions[name].packageValue !== null && this.questions[name].originValue !== null){
+                if(this.questions[name].packageValue !== this.questions[name].originValue){
                     // https://stackoverflow.com/questions/9781218/how-to-change-node-jss-console-font-color
-                    console.log('\x1b[31m%s\x1b[0m', `${qname} has inconsistent derived values`);
-                    console.log('\x1b[31m%s\x1b[0m', `\tOriginRepo: ${this.questions[qname].originValue}`);
-                    console.log('\x1b[31m%s\x1b[0m', `\tPackage.json: ${this.questions[qname].packageValue}`);
+                    console.log('\x1b[31m%s\x1b[0m', `${name} has inconsistent derived values`);
+                    console.log('\x1b[31m%s\x1b[0m', `\tOriginRepo: ${this.questions[name].originValue}`);
+                    console.log('\x1b[31m%s\x1b[0m', `\tPackage.json: ${this.questions[name].packageValue}`);
                     console.log('\x1b[31m%s\x1b[0m', '\tTake better care of your package file, for now, using the originRepo version, consult readme for more details');
                 }
             } else {
@@ -99,13 +111,13 @@ class Readme{
     }
 
     createPriorityMessage(){
-        for (var qname in this.questions){
-            let curQ = this.questions[qname];
+        for (var name in this.questions){
+            let curQ = this.questions[name];
             // makes a message out of the origin and package values
             if(curQ.originValue !== null){
-                curQ.priorityMessage = curQ.message + 'Auto Read Found\n\t' + curQ.originValue;
+                curQ.message = curQ.initmessage + 'Auto Read Found\n\t' + curQ.originValue;
             }else {
-                curQ.priorityMessage = curQ.message + 'Auto Read Found\n\t' + curQ.packageValue;
+                curQ.message = curQ.initmessage + 'Auto Read Found\n\t' + curQ.packageValue;
             }
         }
     }
@@ -207,9 +219,9 @@ class Readme{
     log_state(){
         console.log(`${this.localRepoPath}`);
         console.log(`${this.gitRepoDetails}`);
-        for (let qname in this.questions){
-            let curQ = this.questions[qname];
-            console.log(`${qname}`);
+        for (let name in this.questions){
+            let curQ = this.questions[name];
+            console.log(`${name}`);
             console.log(curQ);
         }
     }
