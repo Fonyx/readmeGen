@@ -37,14 +37,14 @@ class Readme{
         this.originRepoName;
         this.originOwnerProfile;
         this.gitRepoDetails;
-        this.questions = [];
+        this.questions = undefined;
         this.onlyRequired = false;
         this.feelingLucky = false;
     }
 
     askQuestions(){
         for(let i = 0; i < this.questions.length; i++){
-            let currentQuestion = this.questions[i];
+            let currentQuestion = this.questions[i][1];
             currentQuestion.prompt();
         }
     }
@@ -53,24 +53,35 @@ class Readme{
     // null means this value cannot be determined - for use in downstream processes - whereas undefined means this will be determined
     buildQuestions(){
         this.questions = {
-            'projectTitle': new Question(type='input',message='Project Title?\n',qname='projectTitle'),
-            'version': new Question(type='input',message='Project Version?\n',qname='version'),
-            'profileName': new Question(type='input',message='Profile name?\n',qname='profileName'),
-            'collaborators': new Question(type='input',message='Add collaborators More(comma separated)\n',qname='collaborators', packageValue=null),
-            'description': new Question(type='input',message='Project Description?\n',qname='description'),
-            'dependencies': new Question(type='input',message='Add Dependencies More(comma separated)\n',qname='dependencies', originValue = null),
-            'license': new Question(type='input',message='license type?',qname='license', choices=['MIT', 'Unlicense', 'GNU']),
-            'motivation': new Question(type='editor',message='What motivated the project, What problem does it solve?',qname='motivation', originValue = null, packageValue=null, required=false),
-            'installation': new Question(type='editor',message='Installation steps',qname='installation', originValue = null, packageValue=null, required=false),
-            'usage': new Question(type='editor',message='Usage',qname='usage', originValue = null, packageValue=null, required=false),
-            'credits': new Question(type='input',message='Add any people, tech or institutes to credit (comma separated)',qname='credits', originValue = null, packageValue=null, required=false),
-            'features': new Question(type='editor',message='What features does the project have?',qname='features', originValue = null, packageValue=null, required=false),
-            'contributing': new Question(type='editor',message='How to contribute to the project?',qname='contributing', originValue = null, packageValue=null, required=false),
-            'testing': new Question(type='editor',message='Project testing structure',qname='testing', originValue = null, packageValue=null, required=false),
+            'projectTitle': new Question({type:'input',message:'Project Title?\n',qname:'projectTitle'}),
+            'version': new Question({type:'input',message:'Project Version?\n',qname:'version'}),
+            'profileName': new Question({type:'input',message:'Profile name?\n',qname:'profileName'}),
+            'collaborators': new Question({type:'input',message:'Add collaborators More(comma separated)\n',qname:'collaborators', packageValue:null}),
+            'description': new Question({type:'input',message:'Project Description?\n',qname:'description'}),
+            'dependencies': new Question({type:'input',message:'Add Dependencies More(comma separated)\n',qname:'dependencies', originValue : null}),
+            'license': new Question({type:'input',message:'license type?',qname:'license', choices:['MIT', 'Unlicense', 'GNU']}),
+            'motivation': new Question({type:'editor',message:'What motivated the project, What problem does it solve?',qname:'motivation', originValue : null, packageValue:null, required:false}),
+            'installation': new Question({type:'editor',message:'Installation steps',qname:'installation', originValue : null, packageValue:null, required:false}),
+            'usage': new Question({type:'editor',message:'Usage',qname:'usage', originValue : null, packageValue:null, required:false}),
+            'credits': new Question({type:'input',message:'Add any people, tech or institutes to credit (comma separated)',qname:'credits', originValue : null, packageValue:null, required:false}),
+            'features': new Question({type:'editor',message:'What features does the project have?',qname:'features', originValue : null, packageValue:null, required:false}),
+            'contributing': new Question({type:'editor',message:'How to contribute to the project?',qname:'contributing', originValue : null, packageValue:null, required:false}),
+            'testing': new Question({type:'editor',message:'Project testing structure',qname:'testing', originValue : null, packageValue:null, required:false}),
         }
     }
 
     deduceValuesFromRepo(){
+
+        // get repo title from origin
+        let originName = this.gitRepoDetails.name;
+        // set to project title question origin field
+        this.questions.projectTitle.originValue = originName;
+
+        console.log(this.questions.projectTitle);
+
+    }
+
+    deduceValuesFromPackage(){
 
     }
 
@@ -95,24 +106,15 @@ class Readme{
         .then(data => {
             console.log(data);
             this.gitRepoDetails = data;
+            readme.deduceValuesFromRepo();
+            readme.deduceValuesFromPackage();
+            readme.askQuestions();
         })
         .catch((err) => {
             console.log(err);
         })
-
-        this.buildQuestions();
-        this.askQuestions();
     }   
     
-    getQuestionWithName(name){
-        for(let i = 0; i < this.questions.length; i++){
-            let currentQuestion = this.questions[i];
-            if (currentQuestion.name === name){
-                return currentQuestion
-            }
-        }
-        return false;
-    }
 }
 
 
@@ -133,6 +135,7 @@ function startNewReadmeProcess() {
             } else {
                 readme = new Readme('C://Users//nicka//Documents//readmeGen');
             }
+            readme.buildQuestions();
             readme.getGitRepoNameAndProfile();
             readme.getGitRepoDetails();
         })
