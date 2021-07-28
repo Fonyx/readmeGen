@@ -64,14 +64,14 @@ class Readme{
             'contributors': new Question({type:'input',message:'Add contributors/collaborators More(comma separated)\n',qname:'contributors', packageValue:null}),
             'description': new Question({type:'input',message:'Project Description?\n',qname:'description'}),
             'dependencies': new Question({type:'input',message:'Add Dependencies More(comma separated)\n',qname:'dependencies', originValue : null}),
-            'license': new Question({type:'input',message:'license type?',qname:'license', choices:['MIT', 'Unlicense', 'GNU']}),
-            'motivation': new Question({type:'editor',message:'What motivated the project, What problem does it solve?',qname:'motivation', originValue : null, packageValue:null, required:false}),
-            'installation': new Question({type:'editor',message:'Installation steps',qname:'installation', originValue : null, packageValue:null, required:false}),
-            'usage': new Question({type:'editor',message:'Usage',qname:'usage', originValue : null, packageValue:null, required:false}),
-            'credits': new Question({type:'input',message:'Add any people, tech or institutes to credit (comma separated)',qname:'credits', originValue : null, packageValue:null, required:false}),
-            'features': new Question({type:'editor',message:'What features does the project have?',qname:'features', originValue : null, packageValue:null, required:false}),
-            'contributing': new Question({type:'editor',message:'How to contribute to the project?',qname:'contributing', originValue : null, packageValue:null, required:false}),
-            'testing': new Question({type:'editor',message:'Project testing structure',qname:'testing', originValue : null, packageValue:null, required:false}),
+            'license': new Question({type:'input',message:'license type?\n',qname:'license', choices:['MIT', 'Unlicense', 'GNU']}),
+            'motivation': new Question({type:'editor',message:'What motivated the project, What problem does it solve?\n',qname:'motivation', originValue : null, packageValue:null, required:false}),
+            'installation': new Question({type:'editor',message:'Installation steps\n',qname:'installation', originValue : null, packageValue:null, required:false}),
+            'usage': new Question({type:'editor',message:'Usage\n',qname:'usage', originValue : null, packageValue:null, required:false}),
+            'credits': new Question({type:'input',message:'Add any people, tech or institutes to credit (comma separated)\n',qname:'credits', originValue : null, packageValue:null, required:false}),
+            'features': new Question({type:'editor',message:'What features does the project have?\n',qname:'features', originValue : null, packageValue:null, required:false}),
+            'contributing': new Question({type:'editor',message:'How to contribute to the project?\n',qname:'contributing', originValue : null, packageValue:null, required:false}),
+            'testing': new Question({type:'editor',message:'Project testing structure\n',qname:'testing', originValue : null, packageValue:null, required:false}),
         }
     }
 
@@ -102,7 +102,11 @@ class Readme{
         for (var qname in this.questions){
             let curQ = this.questions[qname];
             // makes a message out of the origin and package values
-            curQ.priorityMessage = (curQ.originValue !== null) ? curQ.originValue : curQ.packageValue;
+            if(curQ.originValue !== null){
+                curQ.priorityMessage = curQ.message + 'Auto Read Found\n\t' + curQ.originValue;
+            }else {
+                curQ.priorityMessage = curQ.message + 'Auto Read Found\n\t' + curQ.packageValue;
+            }
         }
     }
 
@@ -129,7 +133,7 @@ class Readme{
                 return currentValue.login;
             })
             console.log(`Contributors: ${contributors}`);
-            this.questions.contributors.originValue = contributors;
+            this.questions.contributors.originValue = contributors.toString();
             this.deduceValuesFromPackage();
         })
         .catch(err => console.error(err));
@@ -152,7 +156,11 @@ class Readme{
             this.questions.testing.packageValue = packageJson.scripts.test;
             this.questions.profileName.packageValue = packageJson.author;
             this.questions.license.packageValue = packageJson.license;
-            this.questions.dependencies.packageValue = packageJson.dependencies;
+            // removing "" and {} from stringified array then switch comma for new line and tab
+            this.questions.dependencies.packageValue = JSON.stringify(packageJson.dependencies)
+                .replace(/["}]/g, '')
+                .replace(/,/g,'\n\t')
+                .replace(/{/, '\t')
 
             this.comparePackageToOrigin();
             this.createPriorityMessage();
@@ -197,7 +205,13 @@ class Readme{
     }  
     
     log_state(){
-        console.log(this);
+        console.log(`${this.localRepoPath}`);
+        console.log(`${this.gitRepoDetails}`);
+        for (let qname in this.questions){
+            let curQ = this.questions[qname];
+            console.log(`${qname}`);
+            console.log(curQ);
+        }
     }
 }
 
