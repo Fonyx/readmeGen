@@ -1,65 +1,9 @@
 // TODO: Include packages needed for this application
-const markdown = require('./utils/generateMarkdown');
+const generateMarkdown = require('./utils/generateMarkdown');
 const fs = require('fs');
 const inquirer = require('inquirer');
-const Question = require('./utils/classes');
 const fetch = require('node-fetch');
-
-
-
-function getOriginDetails(projectRoot){
-    console.log('received ',projectRoot,' as an argument')
-    let data = fs.readFileSync(projectRoot+'/.git/config', {encoding:'utf-8', flag:'r'});
-
-    let regex = new RegExp('\turl.*');
-
-    let urlString = regex.exec(data)[0];
-    // this returns a string like: 	url = git@github.com:Fonyx/readmeGen.git
-
-    let repoDetails = urlString.split(':')[1].split('/');
-    // form: [Fonyx, readmeGen.git]
-    var username = repoDetails[0];
-    // strips the .git off the repo name
-    var repoName = repoDetails[1].split('.')[0];
-    
-    return {'repoName': repoName, 'username': username};
-}
-
-
-function fetchRepoDetails(queryString){
-    return fetch(queryString).then(res => res.json())
-}
-
-// TODO: Create a function to initialize app
-function getRepoFromUser() {
-
-
-    inquirer.prompt([
-        {
-            type: 'input',
-            message: 'local repository path',
-            name: 'localRepoPath',
-        },
-        ])
-        .then((answers) => {
-            let userTestFolder = '';
-            if(answers.localRepoPath){
-                userTestFolder = answers.localRepoPath.replace(/\\/g, '/');
-            } else {
-                userTestFolder = 'C://Users//nicka//Documents//readmeGen';
-            }
-            let originDetails = getOriginDetails(userTestFolder);
-            console.log(originDetails);
-
-            let repoData = fetchRepoDetails(`https://api.github.com/repos/${originDetails.username}/${originDetails.repoName}`).then(json => json);
-            console.log(repoData);
-        })
-
-}
-
-// Function call to initialize app
-getRepoFromUser();
-
+var readme;
 
 class Prompt{
     constructor (type, message, name, choices){
@@ -100,13 +44,66 @@ class Question{
 }
 
 class Readme{
-    constructor(localRepoPath, originRepoName, originOwnerProfile, gitRepoDetails){
+    constructor(localRepoPath){
         this.localRepoPath = localRepoPath;
-        this.originRepoName = originRepoName;
-        this.originOwnerProfile = originOwnerProfile;
-        this.gitRepoDetails = gitRepoDetails;
+        this.originRepoName;
+        this.originOwnerProfile;
+        this.gitRepoDetails;
         this.questions = [];
     }
 
+    getGitRepoNameAndProfile(){
+
+        let data = fs.readFileSync(this.localRepoPath+'/.git/config', {encoding:'utf-8', flag:'r'});
+        let regex = new RegExp('\turl.*');
+        let urlString = regex.exec(data)[0];
+        // this returns a string like: 	url = git@github.com:Fonyx/readmeGen.git
     
+        let repoDetails = urlString.split(':')[1].split('/');
+        // form: [Fonyx, readmeGen.git]
+        this.originOwnerProfile = repoDetails[0];
+        // strips the .git off the repo name
+        this.originRepoName = repoDetails[1].split('.')[0];
+    }
+
+    getGitRepoDetails(){
+        fetch(`https://api.github.com/repos/${this.originOwnerProfile}/${this.originRepoName}`)
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+            this.gitRepoDetails = data
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    }    
 }
+
+
+function startNewReadmeProcess() {
+
+
+    inquirer.prompt([
+        {
+            type: 'input',
+            message: 'local repository path',
+            name: 'localRepoPath',
+        },
+        ])
+        .then((answers) => {
+            console.log(answers.localRepoPath);
+            if(answers.localRepoPath.trim() != ''){
+                readme = new Readme(answers.localRepoPath.replace(/\\/g, '/'));
+            } else {
+                readme = new Readme('C://Users//nicka//Documents//readmeGen');
+            }
+            readme.getGitRepoNameAndProfile();
+            readme.getGitRepoDetails();
+        })
+
+}
+
+startNewReadmeProcess();
+
+
+
