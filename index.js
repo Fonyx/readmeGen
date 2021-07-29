@@ -4,6 +4,45 @@ const fs = require('fs');
 const inquirer = require('inquirer');
 const fetch = require('node-fetch');
 var readme;
+var licenseChoices = [
+        new inquirer.Separator(' = Simple and Permissive: Can make closed source versions = '),
+        {
+            name: '\tMIT License',
+        },
+        new inquirer.Separator(' = Sharing improvements: Cannot make closed source versions = '),
+        {
+            name: '\tGNU General Purpose License v3.0',
+        },
+        new inquirer.Separator(' = Other Common Licenses on Github = '),
+        {
+            name: '\tApache License 2.0',
+        },{
+            name: '\tBSD 2-Clause "Simplified" License',
+        },{
+            name: '\tBSD 3-Clause "New" or "Revised" License',
+        },{
+            name: '\tBoost Software License 1.0',
+        },{
+            name: '\tCreative Commons Zero v1.0 Universal',
+        },{
+            name: '\tEclipse Public License 2.0',
+        },{
+            name: '\tGNU Affero General Public License v3.0',
+        },{
+            name: '\tGNU General Public License v2.0',
+        },{
+            name: '\tGNU Lesser General Public License v2.1',
+        },{
+            name: '\tMozilla Public License 2.0',
+        },{
+            name: '\tThe Unlicense',
+        },{
+            name: '\tMore: https://choosealicense.com/licenses/',
+        },{
+            name: '\tNone: https://choosealicense.com/no-permission/',
+        },
+]
+
 
 class Question{
     /* here we use an object pass in with destructuring.
@@ -16,20 +55,24 @@ class Question{
         this.message = '';
         this.name = name;
         this.choices = choices;
+        // answer is the user input value after prompt runs
         this.answer = answer;
         this.required = required;
         this.packageValue = packageValue;
         this.originValue = originValue;
-        this.userValue = userValue;
     }
 
-    prompt(){
-        inquirer.prompt({
+    async prompt(){
+        await inquirer.prompt({
             type: this.type,
             message: this.message,
             name: this.name,
+            choices: this.choices,
         }).then((answer) => {
-            this.answer = answer;
+            /* note: answer returned is a key/value hash so we need to get the value out by using the name
+            eg. answer = {'projectTitle': ''} => answer['projectTitle] */
+            console.log('User submitted: ',answer[this.name],' for question ',this.name)
+            this.answer = answer[this.name];
         }).catch((err) => {
             console.error(err)
         })
@@ -47,24 +90,12 @@ class Readme{
         this.feelingLucky = false;
     }
 
-    askQuestions(){
-        // for (var name in this.questions){
-        //     let currentQuestion = this.questions[name];
-        //     currentQuestion.prompt();
-        // }
-        // for (let {name, question} in self.questions){
-
-        // }
-        let questionObjs = this.questions.map(function(currentValue){
-            return this.questions[currentValue.name];
-        })
-        inquirer.prompt(questionObjs)
-        .then((answers) => {
-            console.log(answers);
-        })
-        .catch((err) => {
-            console.log(err);
-        })
+    async askQuestions(){
+        for (let name in this.questions){
+            let currQ = this.questions[name];
+            await currQ.prompt();
+        }
+        this.log_state();
     }
 
     buildQuestions(){
@@ -72,19 +103,19 @@ class Readme{
         // null means this value cannot be determined - for use in downstream processes - whereas undefined means this will be determined
         this.questions = {
             'projectTitle': new Question({type:'input',initMessage:'Project Title?\n',name:'projectTitle'}),
-            'version': new Question({type:'input',initmessage:'Project Version?\n',name:'version', originValue:null}),
-            'profileName': new Question({type:'input',initmessage:'Profile name?\n',name:'profileName'}),
-            'contributors': new Question({type:'input',initmessage:'Add contributors/collaborators More(comma separated)\n',name:'contributors', packageValue:null}),
-            'description': new Question({type:'input',initmessage:'Project Description?\n',name:'description'}),
-            'dependencies': new Question({type:'input',initmessage:'Add Dependencies More(comma separated)\n',name:'dependencies', originValue : null}),
-            'license': new Question({type:'input',initmessage:'license type?\n',name:'license', choices:['MIT', 'Unlicense', 'GNU']}),
-            'motivation': new Question({type:'editor',initmessage:'What motivated the project, What problem does it solve?\n',name:'motivation', originValue : null, packageValue:null, required:false}),
-            'installation': new Question({type:'editor',initmessage:'Installation steps\n',name:'installation', originValue : null, packageValue:null, required:false}),
-            'usage': new Question({type:'editor',initmessage:'Usage\n',name:'usage', originValue : null, packageValue:null, required:false}),
-            'credits': new Question({type:'input',initmessage:'Add any people, tech or institutes to credit (comma separated)\n',name:'credits', originValue : null, packageValue:null, required:false}),
-            'features': new Question({type:'editor',initmessage:'What features does the project have?\n',name:'features', originValue : null, packageValue:null, required:false}),
-            'contributing': new Question({type:'editor',initmessage:'How to contribute to the project?\n',name:'contributing', originValue : null, packageValue:null, required:false}),
-            'testing': new Question({type:'editor',initmessage:'Project testing structure\n',name:'testing', originValue : null, packageValue:null, required:false}),
+            'version': new Question({type:'input',initMessage:'Project Version?\n',name:'version', originValue:null}),
+            'profileName': new Question({type:'input',initMessage:'Profile name?\n',name:'profileName'}),
+            'contributors': new Question({type:'input',initMessage:'Add contributors/collaborators More(comma separated)\n',name:'contributors', packageValue:null}),
+            'description': new Question({type:'input',initMessage:'Project Description?\n',name:'description'}),
+            'dependencies': new Question({type:'input',initMessage:'Add Dependencies More(comma separated)\n',name:'dependencies', originValue : null}),
+            'license': new Question({type:'list',initMessage:'license type?\n',name:'license', choices:licenseChoices}),
+            'motivation': new Question({type:'editor',initMessage:'What motivated the project, What problem does it solve?\n',name:'motivation', originValue : null, packageValue:null, required:false}),
+            'installation': new Question({type:'editor',initMessage:'Installation steps\n',name:'installation', originValue : null, packageValue:null, required:false}),
+            'usage': new Question({type:'editor',initMessage:'Usage\n',name:'usage', originValue : null, packageValue:null, required:false}),
+            'credits': new Question({type:'input',initMessage:'Add any people, tech or institutes to credit (comma separated)\n',name:'credits', originValue : null, packageValue:null, required:false}),
+            'features': new Question({type:'editor',initMessage:'What features does the project have?\n',name:'features', originValue : null, packageValue:null, required:false}),
+            'contributing': new Question({type:'editor',initMessage:'How to contribute to the project?\n',name:'contributing', originValue : null, packageValue:null, required:false}),
+            'testing': new Question({type:'editor',initMessage:'Project testing structure\n',name:'testing', originValue : null, packageValue:null, required:false}),
         }
     }
 
@@ -110,14 +141,19 @@ class Readme{
         }
     }
 
-    createPriorityMessage(){
+    createMsgFromInitMsg(){
+        /*
+        Function that takes the intial message string (eg project title?) and appends any values from
+        origin or package in appropriate priority so that the user can keep it or override it;
+        */
         for (var name in this.questions){
             let curQ = this.questions[name];
+            let startMessage = curQ.initMessage + 'Auto Read Found: ';
             // makes a message out of the origin and package values
             if(curQ.originValue !== null){
-                curQ.message = curQ.initmessage + 'Auto Read Found\n\t' + curQ.originValue;
+                curQ.message = startMessage + curQ.originValue + '\n';
             }else {
-                curQ.message = curQ.initmessage + 'Auto Read Found\n\t' + curQ.packageValue;
+                curQ.message = startMessage + curQ.packageValue + '\n';
             }
         }
     }
@@ -170,13 +206,14 @@ class Readme{
             this.questions.license.packageValue = packageJson.license;
             // removing "" and {} from stringified array then switch comma for new line and tab
             this.questions.dependencies.packageValue = JSON.stringify(packageJson.dependencies)
-                .replace(/["}]/g, '')
+                .replace(/"/g, '')
+                .replace(/}/, '\n')
                 .replace(/,/g,'\n\t')
-                .replace(/{/, '\t')
+                .replace(/{/, '\n\t')
 
             this.comparePackageToOrigin();
-            this.createPriorityMessage();
-            this.log_state();
+            this.createMsgFromInitMsg();
+            // this.log_state();
             this.askQuestions();
             
        }catch(error){
