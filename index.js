@@ -71,7 +71,6 @@ class Question{
         }).then((answer) => {
             /* note: answer returned is a key/value hash so we need to get the value out by using the name
             eg. answer = {'projectTitle': ''} => answer['projectTitle] */
-            console.log('User submitted: ',answer[this.name],' for question ',this.name)
             this.answer = answer[this.name];
         }).catch((err) => {
             console.error(err)
@@ -85,6 +84,7 @@ class Readme{
         this.originRepoName;
         this.originOwnerProfile;
         this.gitRepoDetails;
+        this.docContent = '';
         this.questions = undefined;
         this.onlyRequired = false;
         this.feelingLucky = false;
@@ -95,7 +95,8 @@ class Readme{
             let currQ = this.questions[name];
             await currQ.prompt();
         }
-        this.log_state();
+        this.constructDocument();
+        this.saveDocument()
     }
 
     buildQuestions(){
@@ -141,6 +142,23 @@ class Readme{
         }
     }
 
+    constructDocument(){
+        for (let qname in this.questions){
+            let currQ = this.questions[qname];
+            this.docContent += qname;
+            // case where user didn't specify anything
+            if(currQ.answer !== ''){
+                this.docContent += currQ.answer
+            } else if(currQ.originValue !== null){
+                this.docContent += currQ.originValue
+            } else if (currQ.packageValue !== null){
+                this.docContent += currQ.packageValue
+            } else {
+                this.docContent += 'No value found or entered for this section';
+            }
+        }
+    }
+
     createMsgFromInitMsg(){
         /*
         Function that takes the intial message string (eg project title?) and appends any values from
@@ -164,11 +182,9 @@ class Readme{
         */
         // get repo title from origin and set to question originValue
         this.questions.projectTitle.originValue = this.gitRepoDetails.name;
-        console.log(`Repo Name: ${this.gitRepoDetails.name}`);
         
         // get owner name and set to owner question originValue
         this.questions.profileName.originValue = this.gitRepoDetails.owner.login;
-        console.log(`Owner Name: ${this.gitRepoDetails.owner.login}`);
 
         // get description and set to owner question originValue
         this.questions.description.originValue = this.gitRepoDetails.description;
@@ -180,7 +196,6 @@ class Readme{
             let contributors = json.map(function(currentValue){
                 return currentValue.login;
             })
-            console.log(`Contributors: ${contributors}`);
             this.questions.contributors.originValue = contributors.toString();
             this.deduceValuesFromPackage();
         })
@@ -244,7 +259,6 @@ class Readme{
         fetch(`https://api.github.com/repos/${this.originOwnerProfile}/${this.originRepoName}`)
         .then(res => res.json())
         .then(data => {
-            console.log(data);
             this.gitRepoDetails = data;
             readme.deduceValuesFromRepo();
         })
@@ -261,6 +275,11 @@ class Readme{
             console.log(`${name}`);
             console.log(curQ);
         }
+    }
+
+    saveDocument(){
+        fs.writeFileSync('README.md', this.docContent, {encoding: 'utf-8', flag: 'w'});
+        console.log('Written to file successfully');
     }
 }
 
