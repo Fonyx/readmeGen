@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "inquirer": "^6.3.1",
+    "markdown-it": "^12.1.0",
     "node-fetch": "^2.6.1"
   }
 }

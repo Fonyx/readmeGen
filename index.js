@@ -1,7 +1,9 @@
 const generateMarkdown = require('./utils/generateMarkdown');
+const md = require('markdown-it')();
 const fs = require('fs');
 const inquirer = require('inquirer');
 const fetch = require('node-fetch');
+const MarkdownIt = require('markdown-it');
 var readme;
 var licenseChoices = [
         new inquirer.Separator(' = Simple and Permissive: Can make closed source versions = '),
@@ -108,12 +110,6 @@ class Readme{
         this.feelingLucky = false;
     }
 
-    addToDocContent(hardContentList){
-        for (let content of hardContentList){
-            this.docContent += content +'\n';
-        }
-    }
-    // TODO: This function seems to operate incorrectly, check
     async askQuestions(){
         for (let name in this.questions){
             let currQ = this.questions[name];
@@ -143,19 +139,17 @@ class Readme{
         // note the use of undefined as a question constructor default vs the use of null
         // null means this value cannot be determined - for use in downstream processes - whereas undefined means this will be determined
         this.questions = {
-            // projectTitle: new Question({type:'input',initMessage:'Project Title?\n',name:'projectTitle'}),
-            version: new Question({type:'input',initMessage:'Project Version?\n',name:'version', originValue:null}),
-            // profileName: new Question({type:'input',initMessage:'Profile name?\n',name:'profileName'}),
-            contributors: new Question({type:'input',initMessage:'Add contributors/collaborators More(comma separated)\n',name:'contributors', packageValue:null}),
-            description: new Question({type:'input',initMessage:'Project Description?\n',name:'description'}),
-            dependencies: new Question({type:'input',initMessage:'Add Dependencies More(comma separated)\n',name:'dependencies', originValue : null}),
-            license: new Question({type:'list',initMessage:'license type?\n',name:'license', choices:licenseChoices}),
-            installation: new Question({type:'input',initMessage:'Installation steps\n',name:'installation', originValue : null, packageValue:null, automatic:false}),
-            usage: new Question({type:'input',initMessage:'Usage\n',name:'usage', originValue : null, packageValue:null, automatic:false}),
-            credits: new Question({type:'input',initMessage:'Add any people, tech or institutes to credit (comma separated)\n',name:'credits', originValue : null, packageValue:null, automatic:false}),
-            features: new Question({type:'input',initMessage:'What features does the project have?\n',name:'features', originValue : null, packageValue:null, automatic:false}),
-            contributing: new Question({type:'input',initMessage:'How to contribute to the project?\n',name:'contributing', originValue : null, packageValue:null, automatic:false}),
-            testing: new Question({type:'input',initMessage:'Project testing structure\n',name:'testing', originValue : null, packageValue:null, automatic:false}),
+            version: new Question({type:'input',initMessage:'Project Version?\n',name:'Version', originValue:null}),
+            contributors: new Question({type:'input',initMessage:'Add contributors/collaborators More(comma separated)\n',name:'Contributors', packageValue:null}),
+            description: new Question({type:'input',initMessage:'Project Description?\n',name:'Description'}),
+            dependencies: new Question({type:'input',initMessage:'Add Dependencies More(comma separated)\n',name:'Dependencies', originValue : null}),
+            license: new Question({type:'list',initMessage:'license type?\n',name:'License', choices:licenseChoices}),
+            installation: new Question({type:'input',initMessage:'Installation steps\n',name:'Installation', originValue : null, packageValue:null, automatic:false}),
+            usage: new Question({type:'input',initMessage:'Usage\n',name:'Usage', originValue : null, packageValue:null, automatic:false}),
+            credits: new Question({type:'input',initMessage:'Add any people, tech or institutes to credit (comma separated)\n',name:'Credits', originValue : null, packageValue:null, automatic:false}),
+            features: new Question({type:'input',initMessage:'What features does the project have?\n',name:'Features', originValue : null, packageValue:null, automatic:false}),
+            contributing: new Question({type:'input',initMessage:'How to contribute to the project?\n',name:'Contributing', originValue : null, packageValue:null, automatic:false}),
+            testing: new Question({type:'input',initMessage:'Project testing structure\n',name:'Testing', originValue : null, packageValue:null, automatic:false}),
         }
     }
 
@@ -184,40 +178,61 @@ class Readme{
     constructDocument(){
 
         // start with title
-        this.addToDocContent([this.originRepoName]);
+        this.docContent += `# Project: ${this.originRepoName.toUpperCase()}`;
+        this.docContent += '\n\n';
         
-        // description
-        this.addToDocContent([this.questions.description.name, this.questions.description.content]);
+        // version
+        this.constructSection(null, this.questions.version);
         
-        // make and show badges
-        let badges = [
-            // show languages used
-            `![badmath](https://img.shields.io/github/languages/count/${this.originOwnerProfile}/${this.originRepoName})`,
-            // show commit frequency
-            `![badmath](https://img.shields.io/github/commit-activity/m/${this.originOwnerProfile}/${this.originRepoName})`,
-            // show contributors
-            `![badmath](https://img.shields.io/github/contributors/${this.originOwnerProfile}/${this.originRepoName})`
-        ];
-        this.addToDocContent(badges);
-
-        // Make Contents and add
-        for (let question in this.questions){
-            let contentString = `- [${question.name}](#${question.name})`;
-            this.addToDocContent([contentString]);
-        }
-
-        this.addToDocContent([this.questions.description.name, this.questions.description.content]);
+        // make and show badges, show languages used, show commit frequency, show contributors
+        this.docContent += `![badmath](https://img.shields.io/github/languages/count/${this.originOwnerProfile}/${this.originRepoName})`
+        this.docContent += `![badmath](https://img.shields.io/github/commit-activity/m/${this.originOwnerProfile}/${this.originRepoName})`
+        this.docContent += `![badmath](https://img.shields.io/github/contributors/${this.originOwnerProfile}/${this.originRepoName})`
+        this.docContent += '\n\n';
+        
         // Description
-        this.addToDocContent([this.questions.description.name, this.questions.description.content]);
-        // Contents
-        this.addToDocContent([this.questions.description.name, this.questions.description.content]);
-        // Contents
-        this.addToDocContent([this.questions.description.name, this.questions.description.content]);
-        // Contents
-        this.addToDocContent([this.questions.description.name, this.questions.description.content]);
-        // Contents
-        this.addToDocContent([this.questions.description.name, this.questions.description.content]);
-        
+        this.constructSection(null, this.questions.description);
+        // Make Contents and add
+        this.docContent +='## Content \n\n';
+        for (let qname in this.questions){
+            let question = this.questions[qname];
+            let contentString = `- [${question.name}](#${question.name.toLowerCase()})`;
+            this.docContent += contentString;
+            this.docContent += '\n';
+        }
+        this.docContent += '\n\n';
+        // Installation
+        this.constructSection(null, this.questions.installation);
+        // Dependencies
+        this.constructSection(null, this.questions.dependencies);
+        // Usage
+        this.constructSection(null, this.questions.usage);
+        // Credits
+        this.constructSection(null, this.questions.credits);
+        // License
+        this.constructSection(null, this.questions.features);
+        // Features
+        this.constructSection(null, this.questions.features);
+        // Contribute
+        this.constructSection(null, this.questions.contributing);
+        // Contributors
+        this.constructSection(null, this.questions.contributors);
+        // Testing details
+        this.constructSection(null, this.questions.testing);
+    }
+
+    constructSection(title, question){
+        // if title is specified, will treat section as document title section, otherwise just a normal section ##
+        if(title){
+            this.docContent += `# title`;
+        } else {
+            this.docContent += `## ${question.name}`;
+        }
+        this.docContent += '\n\n';
+        this.docContent += '```';
+        this.docContent += question.content;
+        this.docContent += '```';
+        this.docContent += '\n\n';
     }
 
     createMsgFromInitMsg(){
@@ -306,13 +321,13 @@ class Readme{
                 .replace(/{/, '\n\t')
 
             this.comparePackageToOrigin();
-            this.createMsgFromInitMsg();
-            // this.log_state();
-            this.askQuestions();
             
-       }catch(error){
-        console.log(error);
-       }
+        }catch(error){
+            console.log(error);
+        }
+
+        this.createMsgFromInitMsg();
+        this.askQuestions();
     }
 
     getGitRepoNameAndProfileFromUser(){
@@ -381,7 +396,7 @@ function startNewReadmeProcess() {
             if(answers.localRepoPath.trim() != ''){
                 readme = new Readme(answers.localRepoPath.replace(/\\/g, '/'), answers.mode);
             } else {
-                readme = new Readme('C://Users//nicka//Documents//readmeGen', answers.mode);
+                readme = new Readme('C://Users//nicka//Documents//actorLookup', answers.mode);
             }
             readme.buildQuestions();
             readme.getGitRepoNameAndProfileFromUser();
