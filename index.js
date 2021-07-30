@@ -65,7 +65,7 @@ class Question{
     Constructor will be passed an object with some arguments in it, then the constructor with destructure the
     results and set the internal values. It resorts to defaults for omitted results
     */
-    constructor({type, initMessage, name, choices=null, answer=undefined, required=true, packageValue=undefined, originValue=undefined}={}){
+    constructor({type, initMessage, name, choices=null, answer=undefined, automatic=true, packageValue=undefined, originValue=undefined}={}){
         this.type = type;
         this.initMessage = initMessage;
         this.message = '';
@@ -74,7 +74,7 @@ class Question{
         this.content = undefined;
         // answer is the user input value after prompt runs
         this.answer = answer;
-        this.required = required;
+        this.automatic = automatic;
         this.packageValue = packageValue;
         this.originValue = originValue;
     }
@@ -96,10 +96,9 @@ class Question{
 }
 
 class Readme{
-    constructor(localRepoPath, mode, revue){
+    constructor(localRepoPath, mode){
         this.localRepoPath = localRepoPath;
         this.mode = mode;
-        this.revue = revue;
         this.originRepoName;
         this.originOwnerProfile;
         this.gitRepoDetails;
@@ -114,26 +113,26 @@ class Readme{
             this.docContent += content +'\n';
         }
     }
-
+    // TODO: This function seems to operate incorrectly, check
     async askQuestions(){
         for (let name in this.questions){
             let currQ = this.questions[name];
             
-            // required only means only prompt for questions that are required (required=true)
-            if(this.mode === 'required' && currQ.required || this.mode === 'full'){
-                // User wants to revue what the determined answers are
-                if(this.revue === 'manual'){
-                    await currQ.prompt();
-                // auto revue mode means only ask questions that aren't derived (have originValue = null and packageValue = null)
-                } else {
+            // automatic mode, only prompt questions that are automatic false otherwise log automatic result
+            if(this.mode === 'automatic'){
+                if(currQ.automatic) {
                     if(currQ.originValue !== null){
                         console.log(`Automatically assuming value: ${currQ.originValue} for ${currQ.name} from origin`);
                     }else if(currQ.packageValue !== null){
                         console.log(`Automatically assuming value: ${currQ.packageValue} for ${currQ.name} from package`);
-
                     }
+                } else if(!currQ.automatic) {
+                    await currQ.prompt();
                 }
-            }
+            // manual mode: prompt every question
+            } else {
+                await currQ.prompt()
+            }            
         }
         this.decideQuestionContent();
         this.constructDocument();
@@ -144,20 +143,19 @@ class Readme{
         // note the use of undefined as a question constructor default vs the use of null
         // null means this value cannot be determined - for use in downstream processes - whereas undefined means this will be determined
         this.questions = {
-            projectTitle: new Question({type:'input',initMessage:'Project Title?\n',name:'projectTitle'}),
+            // projectTitle: new Question({type:'input',initMessage:'Project Title?\n',name:'projectTitle'}),
             version: new Question({type:'input',initMessage:'Project Version?\n',name:'version', originValue:null}),
-            profileName: new Question({type:'input',initMessage:'Profile name?\n',name:'profileName'}),
+            // profileName: new Question({type:'input',initMessage:'Profile name?\n',name:'profileName'}),
             contributors: new Question({type:'input',initMessage:'Add contributors/collaborators More(comma separated)\n',name:'contributors', packageValue:null}),
             description: new Question({type:'input',initMessage:'Project Description?\n',name:'description'}),
             dependencies: new Question({type:'input',initMessage:'Add Dependencies More(comma separated)\n',name:'dependencies', originValue : null}),
             license: new Question({type:'list',initMessage:'license type?\n',name:'license', choices:licenseChoices}),
-            motivation: new Question({type:'input',initMessage:'What motivated the project, What problem does it solve?\n',name:'motivation', originValue : null, packageValue:null, required:false}),
-            installation: new Question({type:'input',initMessage:'Installation steps\n',name:'installation', originValue : null, packageValue:null, required:false}),
-            usage: new Question({type:'input',initMessage:'Usage\n',name:'usage', originValue : null, packageValue:null, required:false}),
-            credits: new Question({type:'input',initMessage:'Add any people, tech or institutes to credit (comma separated)\n',name:'credits', originValue : null, packageValue:null, required:false}),
-            features: new Question({type:'input',initMessage:'What features does the project have?\n',name:'features', originValue : null, packageValue:null, required:false}),
-            contributing: new Question({type:'input',initMessage:'How to contribute to the project?\n',name:'contributing', originValue : null, packageValue:null, required:false}),
-            testing: new Question({type:'input',initMessage:'Project testing structure\n',name:'testing', originValue : null, packageValue:null, required:false}),
+            installation: new Question({type:'input',initMessage:'Installation steps\n',name:'installation', originValue : null, packageValue:null, automatic:false}),
+            usage: new Question({type:'input',initMessage:'Usage\n',name:'usage', originValue : null, packageValue:null, automatic:false}),
+            credits: new Question({type:'input',initMessage:'Add any people, tech or institutes to credit (comma separated)\n',name:'credits', originValue : null, packageValue:null, automatic:false}),
+            features: new Question({type:'input',initMessage:'What features does the project have?\n',name:'features', originValue : null, packageValue:null, automatic:false}),
+            contributing: new Question({type:'input',initMessage:'How to contribute to the project?\n',name:'contributing', originValue : null, packageValue:null, automatic:false}),
+            testing: new Question({type:'input',initMessage:'Project testing structure\n',name:'testing', originValue : null, packageValue:null, automatic:false}),
         }
     }
 
@@ -186,7 +184,7 @@ class Readme{
     constructDocument(){
 
         // start with title
-        this.addToDocContent([this.questions.projectTitle.name, this.questions.projectTitle.content]);
+        this.addToDocContent([this.originRepoName]);
         
         // description
         this.addToDocContent([this.questions.description.name, this.questions.description.content]);
@@ -200,7 +198,25 @@ class Readme{
             // show contributors
             `![badmath](https://img.shields.io/github/contributors/${this.originOwnerProfile}/${this.originRepoName})`
         ];
-            this.addToDocContent(badges);
+        this.addToDocContent(badges);
+
+        // Make Contents and add
+        for (let question in this.questions){
+            let contentString = `- [${question.name}](#${question.name})`;
+            this.addToDocContent([contentString]);
+        }
+
+        this.addToDocContent([this.questions.description.name, this.questions.description.content]);
+        // Description
+        this.addToDocContent([this.questions.description.name, this.questions.description.content]);
+        // Contents
+        this.addToDocContent([this.questions.description.name, this.questions.description.content]);
+        // Contents
+        this.addToDocContent([this.questions.description.name, this.questions.description.content]);
+        // Contents
+        this.addToDocContent([this.questions.description.name, this.questions.description.content]);
+        // Contents
+        this.addToDocContent([this.questions.description.name, this.questions.description.content]);
         
     }
 
@@ -225,7 +241,7 @@ class Readme{
         for (let qname in this.questions){
             let currQ = this.questions[qname];
             // case where user didn't specify anything
-            if(currQ.answer !== ''){
+            if(currQ.answer !== '' && currQ.answer !== undefined){
                 currQ.content = currQ.answer;
             } else if(currQ.originValue !== null){
                 currQ.content = currQ.originValue;
@@ -244,10 +260,10 @@ class Readme{
         Function collects values of interest from github repo details contained in this.gitRepoDetails
         */
         // get repo title from origin and set to question originValue
-        this.questions.projectTitle.originValue = this.gitRepoDetails.name;
+        // this.questions.projectTitle.originValue = this.gitRepoDetails.name;
         
         // get owner name and set to owner question originValue
-        this.questions.profileName.originValue = this.gitRepoDetails.owner.login;
+        // this.questions.profileName.originValue = this.gitRepoDetails.owner.login;
 
         // get description and set to owner question originValue
         this.questions.description.originValue = this.gitRepoDetails.description;
@@ -276,11 +292,11 @@ class Readme{
            let packageJson = JSON.parse(rawPackage);
 
             // set the packageValues for the corresponding question elements
-            this.questions.projectTitle.packageValue = packageJson.name;
+            // this.questions.projectTitle.packageValue = packageJson.name;
             this.questions.version.packageValue = packageJson.version;
             this.questions.description.packageValue = packageJson.description;
             this.questions.testing.packageValue = packageJson.scripts.test;
-            this.questions.profileName.packageValue = packageJson.author;
+            // this.questions.profileName.packageValue = packageJson.author;
             this.questions.license.packageValue = packageJson.license;
             // removing "" and {} from stringified array then switch comma for new line and tab
             this.questions.dependencies.packageValue = JSON.stringify(packageJson.dependencies)
@@ -354,14 +370,8 @@ function startNewReadmeProcess() {
             name: 'localRepoPath',
         },{
             type: 'list',
-            message: 'Only required sections or full detail?',
-            name: 'mode',
-            choices: ['required', 'full'],
-            default: 0,
-        },{
-            type: 'list',
             message: 'Assume automatic is correct or manually override?',
-            name: 'revue',
+            name: 'mode',
             choices: ['automatic', 'manual'],
             default: 0,
         }
@@ -369,9 +379,9 @@ function startNewReadmeProcess() {
         .then((answers) => {
             console.log(answers.localRepoPath);
             if(answers.localRepoPath.trim() != ''){
-                readme = new Readme(answers.localRepoPath.replace(/\\/g, '/'), answers.mode, answers.revue);
+                readme = new Readme(answers.localRepoPath.replace(/\\/g, '/'), answers.mode);
             } else {
-                readme = new Readme('C://Users//nicka//Documents//readmeGen', answers.mode, answers.revue);
+                readme = new Readme('C://Users//nicka//Documents//readmeGen', answers.mode);
             }
             readme.buildQuestions();
             readme.getGitRepoNameAndProfileFromUser();

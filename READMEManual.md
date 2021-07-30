@@ -18,7 +18,7 @@ My mantra is that if it gets done, it gets done well, if it gets done twice, it 
 
 ## Installation
 ```
-1. Make your own project (not packaged)
+1. Make your own project (not packaged), must use github
 2. Checkout project and install node.js
 3. Run npm install to download dependencies
 ```
@@ -45,7 +45,7 @@ read-pkg : https://www.npmjs.com/package/read-pkg
 - license: [readPackage-license], UserInputChoice  
 - project motivation: Long string  
 - installation: Long string  
-- usage: long string   
+- usage: long string  
 - credits: UserInput   
 - features: UserInput  
 - how to contribute: UserInput    
