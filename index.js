@@ -1,4 +1,3 @@
-// TODO: Include packages needed for this application
 const generateMarkdown = require('./utils/generateMarkdown');
 const fs = require('fs');
 const inquirer = require('inquirer');
@@ -43,18 +42,36 @@ var licenseChoices = [
         },
 ]
 
+var markdown = {
+    projectTitle: `${this.content}`,
+    version: `${this.content}`,
+    profileName: `${this.content}`,
+    contributors: `${this.content}`,
+    description: `${this.content}`,
+    dependencies: `${this.content}`,
+    license: `${this.content}`,
+    motivation: `${this.content}`,
+    installation: `${this.content}`,
+    usage: `${this.content}`,
+    credits: `${this.content}`,
+    features: `${this.content}`,
+    contributing: `${this.content}`,
+    testing: `${this.content}`,
+}
+
 
 class Question{
     /* here we use an object pass in with destructuring.
     Constructor will be passed an object with some arguments in it, then the constructor with destructure the
     results and set the internal values. It resorts to defaults for omitted results
     */
-    constructor({type, initMessage, name, choices=null, answer=undefined, required=true, packageValue=undefined, originValue=undefined, userValue=undefined}={}){
+    constructor({type, initMessage, name, choices=null, answer=undefined, required=true, packageValue=undefined, originValue=undefined}={}){
         this.type = type;
         this.initMessage = initMessage;
         this.message = '';
         this.name = name;
         this.choices = choices;
+        this.content = undefined;
         // answer is the user input value after prompt runs
         this.answer = answer;
         this.required = required;
@@ -79,8 +96,10 @@ class Question{
 }
 
 class Readme{
-    constructor(localRepoPath){
+    constructor(localRepoPath, mode, revue){
         this.localRepoPath = localRepoPath;
+        this.mode = mode;
+        this.revue = revue;
         this.originRepoName;
         this.originOwnerProfile;
         this.gitRepoDetails;
@@ -90,33 +109,55 @@ class Readme{
         this.feelingLucky = false;
     }
 
+    addToDocContent(hardContentList){
+        for (let content of hardContentList){
+            this.docContent += content +'\n';
+        }
+    }
+
     async askQuestions(){
         for (let name in this.questions){
             let currQ = this.questions[name];
-            await currQ.prompt();
+            
+            // required only means only prompt for questions that are required (required=true)
+            if(this.mode === 'required' && currQ.required || this.mode === 'full'){
+                // User wants to revue what the determined answers are
+                if(this.revue === 'manual'){
+                    await currQ.prompt();
+                // auto revue mode means only ask questions that aren't derived (have originValue = null and packageValue = null)
+                } else {
+                    if(currQ.originValue !== null){
+                        console.log(`Automatically assuming value: ${currQ.originValue} for ${currQ.name} from origin`);
+                    }else if(currQ.packageValue !== null){
+                        console.log(`Automatically assuming value: ${currQ.packageValue} for ${currQ.name} from package`);
+
+                    }
+                }
+            }
         }
+        this.decideQuestionContent();
         this.constructDocument();
-        this.saveDocument()
+        this.saveDocument();
     }
 
     buildQuestions(){
         // note the use of undefined as a question constructor default vs the use of null
         // null means this value cannot be determined - for use in downstream processes - whereas undefined means this will be determined
         this.questions = {
-            'projectTitle': new Question({type:'input',initMessage:'Project Title?\n',name:'projectTitle'}),
-            'version': new Question({type:'input',initMessage:'Project Version?\n',name:'version', originValue:null}),
-            'profileName': new Question({type:'input',initMessage:'Profile name?\n',name:'profileName'}),
-            'contributors': new Question({type:'input',initMessage:'Add contributors/collaborators More(comma separated)\n',name:'contributors', packageValue:null}),
-            'description': new Question({type:'input',initMessage:'Project Description?\n',name:'description'}),
-            'dependencies': new Question({type:'input',initMessage:'Add Dependencies More(comma separated)\n',name:'dependencies', originValue : null}),
-            'license': new Question({type:'list',initMessage:'license type?\n',name:'license', choices:licenseChoices}),
-            'motivation': new Question({type:'editor',initMessage:'What motivated the project, What problem does it solve?\n',name:'motivation', originValue : null, packageValue:null, required:false}),
-            'installation': new Question({type:'editor',initMessage:'Installation steps\n',name:'installation', originValue : null, packageValue:null, required:false}),
-            'usage': new Question({type:'editor',initMessage:'Usage\n',name:'usage', originValue : null, packageValue:null, required:false}),
-            'credits': new Question({type:'input',initMessage:'Add any people, tech or institutes to credit (comma separated)\n',name:'credits', originValue : null, packageValue:null, required:false}),
-            'features': new Question({type:'editor',initMessage:'What features does the project have?\n',name:'features', originValue : null, packageValue:null, required:false}),
-            'contributing': new Question({type:'editor',initMessage:'How to contribute to the project?\n',name:'contributing', originValue : null, packageValue:null, required:false}),
-            'testing': new Question({type:'editor',initMessage:'Project testing structure\n',name:'testing', originValue : null, packageValue:null, required:false}),
+            projectTitle: new Question({type:'input',initMessage:'Project Title?\n',name:'projectTitle'}),
+            version: new Question({type:'input',initMessage:'Project Version?\n',name:'version', originValue:null}),
+            profileName: new Question({type:'input',initMessage:'Profile name?\n',name:'profileName'}),
+            contributors: new Question({type:'input',initMessage:'Add contributors/collaborators More(comma separated)\n',name:'contributors', packageValue:null}),
+            description: new Question({type:'input',initMessage:'Project Description?\n',name:'description'}),
+            dependencies: new Question({type:'input',initMessage:'Add Dependencies More(comma separated)\n',name:'dependencies', originValue : null}),
+            license: new Question({type:'list',initMessage:'license type?\n',name:'license', choices:licenseChoices}),
+            motivation: new Question({type:'input',initMessage:'What motivated the project, What problem does it solve?\n',name:'motivation', originValue : null, packageValue:null, required:false}),
+            installation: new Question({type:'input',initMessage:'Installation steps\n',name:'installation', originValue : null, packageValue:null, required:false}),
+            usage: new Question({type:'input',initMessage:'Usage\n',name:'usage', originValue : null, packageValue:null, required:false}),
+            credits: new Question({type:'input',initMessage:'Add any people, tech or institutes to credit (comma separated)\n',name:'credits', originValue : null, packageValue:null, required:false}),
+            features: new Question({type:'input',initMessage:'What features does the project have?\n',name:'features', originValue : null, packageValue:null, required:false}),
+            contributing: new Question({type:'input',initMessage:'How to contribute to the project?\n',name:'contributing', originValue : null, packageValue:null, required:false}),
+            testing: new Question({type:'input',initMessage:'Project testing structure\n',name:'testing', originValue : null, packageValue:null, required:false}),
         }
     }
 
@@ -143,20 +184,24 @@ class Readme{
     }
 
     constructDocument(){
-        for (let qname in this.questions){
-            let currQ = this.questions[qname];
-            this.docContent += qname;
-            // case where user didn't specify anything
-            if(currQ.answer !== ''){
-                this.docContent += currQ.answer
-            } else if(currQ.originValue !== null){
-                this.docContent += currQ.originValue
-            } else if (currQ.packageValue !== null){
-                this.docContent += currQ.packageValue
-            } else {
-                this.docContent += 'No value found or entered for this section';
-            }
-        }
+
+        // start with title
+        this.addToDocContent([this.questions.projectTitle.name, this.questions.projectTitle.content]);
+        
+        // description
+        this.addToDocContent([this.questions.description.name, this.questions.description.content]);
+        
+        // make and show badges
+        let badges = [
+            // show languages used
+            `![badmath](https://img.shields.io/github/languages/count/${this.originOwnerProfile}/${this.originRepoName})`,
+            // show commit frequency
+            `![badmath](https://img.shields.io/github/commit-activity/m/${this.originOwnerProfile}/${this.originRepoName})`,
+            // show contributors
+            `![badmath](https://img.shields.io/github/contributors/${this.originOwnerProfile}/${this.originRepoName})`
+        ];
+            this.addToDocContent(badges);
+        
     }
 
     createMsgFromInitMsg(){
@@ -172,6 +217,24 @@ class Readme{
                 curQ.message = startMessage + curQ.originValue + '\n';
             }else {
                 curQ.message = startMessage + curQ.packageValue + '\n';
+            }
+        }
+    }
+
+    decideQuestionContent(){
+        for (let qname in this.questions){
+            let currQ = this.questions[qname];
+            // case where user didn't specify anything
+            if(currQ.answer !== ''){
+                currQ.content = currQ.answer;
+            } else if(currQ.originValue !== null){
+                currQ.content = currQ.originValue;
+            } else if (currQ.packageValue !== null){
+                currQ.content = currQ.packageValue;
+            } else if(!currQ.required){
+                console.log(`No value for ${currQ.name} but not required`)
+            } else {
+                throw new Error('No value for this required question')
             }
         }
     }
@@ -289,14 +352,26 @@ function startNewReadmeProcess() {
             type: 'input',
             message: 'local repository path',
             name: 'localRepoPath',
-        },
+        },{
+            type: 'list',
+            message: 'Only required sections or full detail?',
+            name: 'mode',
+            choices: ['required', 'full'],
+            default: 0,
+        },{
+            type: 'list',
+            message: 'Assume automatic is correct or manually override?',
+            name: 'revue',
+            choices: ['automatic', 'manual'],
+            default: 0,
+        }
         ])
         .then((answers) => {
             console.log(answers.localRepoPath);
             if(answers.localRepoPath.trim() != ''){
-                readme = new Readme(answers.localRepoPath.replace(/\\/g, '/'));
+                readme = new Readme(answers.localRepoPath.replace(/\\/g, '/'), answers.mode, answers.revue);
             } else {
-                readme = new Readme('C://Users//nicka//Documents//readmeGen');
+                readme = new Readme('C://Users//nicka//Documents//readmeGen', answers.mode, answers.revue);
             }
             readme.buildQuestions();
             readme.getGitRepoNameAndProfileFromUser();
@@ -306,11 +381,3 @@ function startNewReadmeProcess() {
 }
 
 startNewReadmeProcess();
-
-
-// build question instances - blueprint
-
-// get all details from origin data and fill
-
-
-
