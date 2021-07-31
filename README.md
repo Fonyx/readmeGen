@@ -1,69 +1,28 @@
-# Project: READMEGEN
+# Project: ACTORLOOKUP
 
-## Version
-
-```1.0.0```
-
-![badmath](https://img.shields.io/github/languages/count/Fonyx/readmeGen)![badmath](https://img.shields.io/github/commit-activity/m/Fonyx/readmeGen)![badmath](https://img.shields.io/github/contributors/Fonyx/readmeGen)
+![badmath](https://img.shields.io/github/languages/count/Fonyx/actorLookup)![badmath](https://img.shields.io/github/commit-activity/m/Fonyx/actorLookup)![badmath](https://img.shields.io/github/contributors/Fonyx/actorLookup)
 
 ## Description
 
-```A node project that prompts user for details```
+```Group details to be decided```
 
 ## Content 
 
-- [Version](#version)
-- [Contributors](#contributors)
 - [Description](#description)
-- [Dependencies](#dependencies)
-- [License](#license)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Credits](#credits)
-- [Features](#features)
-- [Contributing](#contributing)
-- [Testing](#testing)
-- [Questions](#questions)
+- [Contributors](#contributors)
 
 
-## Installation
+## Contributors 
 
-```install ```
+[Fonyx](https://github.com/Fonyx)
 
-## Dependencies
+[ChristopherBz](https://github.com/ChristopherBz)
 
-```
-	inquirer:^6.3.1
-	markdown-it:^12.1.0
-	node-fetch:^2.6.1
-	pretty-error:^3.0.4
-```
+[Wgobrie1](https://github.com/Wgobrie1)
 
-## Usage
+[EllaFerreira](https://github.com/EllaFerreira)
 
-```use me```
 
-## Credits
 
-```Usyd, trinity```
-
-## Features
-
-```feature1, feature2```
-
-## Features
-
-```feature1, feature2```
-
-## Contributing
-
-```not open to contribution```
-
-## Contributors
-
-```Fonyx```
-
-## Testing
-
-```jest```
+## Checkout my github account [Fonyx](https://github.com/Fonyx)
 

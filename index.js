@@ -192,17 +192,17 @@ class Readme{
             projectTitle: new Question({type:'input',initMessage:'Project Title?\n',name:'Project Title'}),
             profileName: new Question({type:'input',initMessage:'Github profile name?\n',name:'Profile Name'}),
             version: new Question({type:'input',initMessage:'Project Version?\n',name:'Version', originValue:null}),
-            contributors: new Question({type:'input',initMessage:'Add contributors/collaborators More(comma separated)\n',name:'Contributors', packageValue:null}),
             description: new Question({type:'input',initMessage:'Project Description?\n',name:'Description'}),
-            dependencies: new Question({type:'input',initMessage:'Add Dependencies More(comma separated)\n',name:'Dependencies', originValue : null}),
-            license: new Question({type:'list',initMessage:'license type?\n',name:'License', choices:licenseChoices}),
             installation: new Question({type:'input',initMessage:'Installation steps\n',name:'Installation', originValue : null, packageValue:null, automatic:false}),
+            dependencies: new Question({type:'input',initMessage:'Add Dependencies More(comma separated)\n',name:'Dependencies', originValue : null}),
             usage: new Question({type:'input',initMessage:'Usage\n',name:'Usage', originValue : null, packageValue:null, automatic:false}),
             credits: new Question({type:'input',initMessage:'Add any people, tech or institutes to credit (comma separated)\n',name:'Credits', originValue : null, packageValue:null, automatic:false}),
+            license: new Question({type:'list',initMessage:'license type?\n',name:'License', choices:licenseChoices}),
             features: new Question({type:'input',initMessage:'What features does the project have?\n',name:'Features', originValue : null, packageValue:null, automatic:false}),
+            contributors: new Question({type:'input',initMessage:'Add contributors/collaborators More(comma separated)\n',name:'Contributors', packageValue:null}),
             contributing: new Question({type:'input',initMessage:'How to contribute to the project?\n',name:'Contributing', originValue : null, packageValue:null, automatic:false}),
             testing: new Question({type:'input',initMessage:'Project testing structure\n',name:'Testing', originValue : null, packageValue:null, automatic:false}),
-            questions: new Question({type:'input',initMessage:'How to contact you?\n',name:'Questions', originValue : null, packageValue:null, automatic:false}),
+            contact: new Question({type:'input',initMessage:'How to contact you?\n',name:'Contact', originValue : null, packageValue:null, automatic:false}),
         }
     }
 
@@ -251,12 +251,15 @@ class Readme{
         // Make Contents and add
         this.docContent +='## Content \n\n';
         for (let qname in this.questions){
-            // if the question needs to be in the contents section
-            if(!skippedContent.includes(qname)){
-                let question = this.questions[qname];
-                let contentString = `- [${question.name}](#${question.name.toLowerCase()})`;
-                this.docContent += contentString;
-                this.docContent += '\n';
+            let question = this.questions[qname];
+            // if question has content
+            if (question.content){
+                // if the question needs to be in the contents section
+                if(!skippedContent.includes(qname)){
+                    let contentString = `- [${question.name}](#${question.name.toLowerCase()})`;
+                    this.docContent += contentString;
+                    this.docContent += '\n';
+                }
             }
         }
         this.docContent += '\n\n';
@@ -272,26 +275,44 @@ class Readme{
         this.constructSection(null, this.questions.features);
         // Features
         this.constructSection(null, this.questions.features);
+        
+        // Contributors
+        if(this.questions.contributing.content){
+            this.docContent +='## Contributors \n\n';
+            // this.constructSection(null, this.questions.contributors);
+            for( let contributor of this.questions.contributors.content.trim().split(',')){
+                this.docContent += `[${contributor}](https://github.com/${contributor})` 
+                this.docContent += '\n\n';
+            }
+        }
+
         // Contribute
         this.constructSection(null, this.questions.contributing);
-        // Contributors
-        this.constructSection(null, this.questions.contributors);
+        
         // Testing details
         this.constructSection(null, this.questions.testing);
+
+        // Contact and profile github link
+        this.constructSection(null, this.questions.contact);
+        this.docContent += '\n\n';
+        this.docContent += '## Checkout my github account '+`[${this.questions.profileName.content}](https://github.com/${this.questions.profileName.content})` 
+        this.docContent += '\n\n';
     }
 
     constructSection(title, question){
         // if title is specified, will treat section as document title section, otherwise just a normal section ##
-        if(title){
-            this.docContent += `# title`;
-        } else {
-            this.docContent += `## ${question.name}`;
+        if (question.content){
+            if(title){
+                this.docContent += `# title`;
+            } else {
+                this.docContent += `## ${question.name}`;
+            }
+            this.docContent += '\n\n';
+            this.docContent += '```';
+            this.docContent += question.content;
+            this.docContent += '```';
+            this.docContent += '\n\n';
         }
-        this.docContent += '\n\n';
-        this.docContent += '```';
-        this.docContent += question.content;
-        this.docContent += '```';
-        this.docContent += '\n\n';
     }
 
     createMsgFromInitMsg(){
@@ -446,7 +467,7 @@ function startNewReadmeProcess() {
             if(answers.localRepoPath.trim() != ''){
                 readme = new Readme(answers.localRepoPath.replace(/\\/g, '/'), answers.mode);
             } else {
-                readme = new Readme('C://Users//nicka//Documents//readmeGen', answers.mode);
+                readme = new Readme('C://Users//nicka//Documents//actorLookup', answers.mode);
             }
             readme.buildQuestions();
             readme.getGitRepoNameAndProfileFromUser();
