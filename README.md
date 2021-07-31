@@ -1,26 +1,27 @@
-# Project: [GROUPPROJECT1](https://github.com/Fonyx/groupProject1)
+# Project: [READMEGEN](https://github.com/Fonyx/readmeGen)
 
 ## Version
 
-```1.0.3```
+```1.0.0  ```
 
-![badmath](https://img.shields.io/github/license/Fonyx/actorLookup)  ![badmath](https://img.shields.io/github/languages/count/Fonyx/actorLookup)  ![badmath](https://img.shields.io/github/commit-activity/m/Fonyx/actorLookup)  ![badmath](https://img.shields.io/github/contributors/Fonyx/actorLookup)  
+![badmath](https://img.shields.io/github/license/Fonyx/readmeGen)  ![badmath](https://img.shields.io/github/languages/count/Fonyx/readmeGen)  ![badmath](https://img.shields.io/github/commit-activity/m/Fonyx/readmeGen)  ![badmath](https://img.shields.io/github/contributors/Fonyx/readmeGen)  
 
 ## Description
 
-```Group details to be decided```
+```A node project that prompts user for details  ```
+
+![Screenshot](C://Users//nicka//Documents//readmeGen//assets//images//screenshot.png)
 
 ## Content 
 
 - [Version](#version)
 - [Description](#description)
-- [Dependencies](#dependencies)
-- [License](#license)
-- [Contributors](#contributors)
 - [Installation](#installation)
+- [Dependencies](#dependencies)
 - [Usage](#usage)
 - [Credits](#credits)
 - [Features](#features)
+- [Contributors](#contributors)
 - [Contributing](#contributing)
 - [Testing](#testing)
 - [Contact](#contact)
@@ -28,45 +29,44 @@
 
 ## Installation
 
-```install me```
+```install  ```
 
 ## Dependencies
 
-```fs, inquirer```
+```
+	inquirer:^6.3.1
+	markdown-it:^12.1.0
+	node-fetch:^2.6.1
+	pretty-error:^3.0.4
+  ```
 
 ## Usage
 
-```use me```
+```use  ```
 
 ## Credits
 
-```usyd, trinity```
+```ertvb, werv,   ```
 
 ## Features
 
-```automatic node reading```
+```feature1, feature2  ```
 
 ## Contributors 
 
 [Fonyx](https://github.com/Fonyx)
 
-[ChristopherBz](https://github.com/ChristopherBz)
-
-[Wgobrie1](https://github.com/Wgobrie1)
-
-[EllaFerreira](https://github.com/EllaFerreira)
-
 ## Contributing
 
-```closed to contributions```
+```no  ```
 
 ## Testing
 
-```jest```
+```jest  ```
 
 ## Contact
 
-```nick@blabla.fake```
+```no  ```
 
 
 

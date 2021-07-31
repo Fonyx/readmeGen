@@ -139,8 +139,8 @@ class Readme{
         this.gitRepoDetails;
         this.docContent = '';
         this.questions = undefined;
-        this.onlyRequired = false;
-        this.feelingLucky = false;
+        this.usageScreencapPath = undefined;
+        this.projectScreenshotPath = undefined;
     }
 
     async askQuestions(){
@@ -175,14 +175,14 @@ class Readme{
             projectTitle: new Question({type:'input',initMessage:'Project Title?\n',name:'Project Title'}),
             profileName: new Question({type:'input',initMessage:'Github profile name?\n',name:'Profile Name'}),
             version: new Question({type:'input',initMessage:'Project Version?\n',name:'Version', originValue:null}),
-            description: new Question({type:'input',initMessage:'Project Description?\n',name:'Description'}),
-            dependencies: new Question({type:'input',initMessage:'Add Dependencies More(comma separated)\n',name:'Dependencies', originValue : null}),
             license: new Question({type:'list',initMessage:'license type?\n',name:'License', choices:licenseChoices}),
-            contributors: new Question({type:'input',initMessage:'Add contributors/collaborators More(comma separated)\n',name:'Contributors', packageValue:null}),
+            description: new Question({type:'input',initMessage:'Project Description?\n',name:'Description'}),
             installation: new Question({type:'input',initMessage:'Installation steps\n',name:'Installation', originValue : null, packageValue:null, automatic:false}),
+            dependencies: new Question({type:'input',initMessage:'Add Dependencies More(comma separated)\n',name:'Dependencies', originValue : null}),
             usage: new Question({type:'input',initMessage:'Usage\n',name:'Usage', originValue : null, packageValue:null, automatic:false}),
             credits: new Question({type:'input',initMessage:'Add any people, tech or institutes to credit (comma separated)\n',name:'Credits', originValue : null, packageValue:null, automatic:false}),
             features: new Question({type:'input',initMessage:'What features does the project have?\n',name:'Features', originValue : null, packageValue:null, automatic:false}),
+            contributors: new Question({type:'input',initMessage:'Add contributors/collaborators More(comma separated)\n',name:'Contributors', packageValue:null}),
             contributing: new Question({type:'input',initMessage:'How to contribute to the project?\n',name:'Contributing', originValue : null, packageValue:null, automatic:false}),
             testing: new Question({type:'input',initMessage:'Project testing structure\n',name:'Testing', originValue : null, packageValue:null, automatic:false}),
             contact: new Question({type:'input',initMessage:'How to contact you?\n',name:'Contact', originValue : null, packageValue:null, automatic:false}),
@@ -232,6 +232,10 @@ class Readme{
         
         // Description
         this.constructSection(null, this.questions.description);
+        this.docContent += `![Screenshot](${this.projectScreenshotPath})`;
+        this.docContent += '\n\n';
+
+
         // Make Contents and add
         this.docContent +='## Content \n\n';
         for (let qname in this.questions){
@@ -293,7 +297,7 @@ class Readme{
             }
             this.docContent += '\n\n';
             this.docContent += '```';
-            this.docContent += question.content;
+            this.docContent += question.content+'  ';
             this.docContent += '```';
             this.docContent += '\n\n';
         }
@@ -322,13 +326,31 @@ class Readme{
         Function collects values of interest from github repo details contained in this.gitRepoDetails
         */
         // get repo title from origin and set to question originValue
-        this.questions.projectTitle.originValue = this.gitRepoDetails.name;
-        
+        if(this.gitRepoDetails.name){
+            this.questions.projectTitle.originValue = this.gitRepoDetails.name;
+            console.log("\x1b[32m%s\x1b[32m", `Found github repo name ${this.gitRepoDetails.name}`);
+        } else {
+            // log in red
+            console.log('\x1b[31m%s\x1b[0m', `Not github repo name for ${this.localRepoPath}`);
+        }
+
         // get owner name and set to owner question originValue
-        this.questions.profileName.originValue = this.gitRepoDetails.owner.login;
+        if(this.gitRepoDetails.owner.login){
+            this.questions.profileName.originValue = this.gitRepoDetails.owner.login;
+            console.log("\x1b[32m%s\x1b[32m", `Found github owner ${this.gitRepoDetails.owner.login}`);
+        } else {
+            // log in red
+            console.log('\x1b[31m%s\x1b[0m', `No github owner for ${this.localRepoPath}`);
+        }
 
         // get description and set to owner question originValue
-        this.questions.description.originValue = this.gitRepoDetails.description;
+        if(this.gitRepoDetails.description){
+            this.questions.description.originValue = this.gitRepoDetails.description;
+            console.log("\x1b[32m%s\x1b[32m", `Found github description ${this.gitRepoDetails.description}`);
+        } else {
+            // log in red
+            console.log('\x1b[31m%s\x1b[0m', `Not github description for ${this.localRepoPath}`);
+        }
 
         // get contributors
         fetch(this.gitRepoDetails.url+'/contributors')
@@ -337,7 +359,13 @@ class Readme{
             let contributors = json.map(function(currentValue){
                 return currentValue.login;
             })
-            this.questions.contributors.originValue = contributors.toString();
+            if(contributors){
+                this.questions.contributors.originValue = contributors.toString();
+                console.log("\x1b[32m%s\x1b[32m", `Found github contributors ${contributors}`);
+            } else {
+                // log in red
+                console.log('\x1b[31m%s\x1b[0m', `Not github contributors for ${this.localRepoPath}`);
+            }
             this.deduceValuesFromPackage();
         })
         .catch(err => console.error(err));
@@ -354,11 +382,11 @@ class Readme{
                 let rawPackage = fs.readFileSync(this.localRepoPath+'/package.json', {encoding:'utf-8', flag:'r'});
                 let packageJson = JSON.parse(rawPackage);
                 // set the packageValues for the corresponding question elements
-                // this.questions.projectTitle.packageValue = packageJson.name;
+                this.questions.projectTitle.packageValue = packageJson.name;
                 this.questions.version.packageValue = packageJson.version;
                 this.questions.description.packageValue = packageJson.description;
                 this.questions.testing.packageValue = packageJson.scripts.test;
-                // this.questions.profileName.packageValue = packageJson.author;
+                this.questions.profileName.packageValue = packageJson.author;
                 this.questions.license.packageValue = packageJson.license;
                 // removing "" and {} from stringified array then switch comma for new line and tab
                 this.questions.dependencies.packageValue = JSON.stringify(packageJson.dependencies)
@@ -374,10 +402,11 @@ class Readme{
 
             
         }catch(err){
+
             if(err instanceof noPackageError){
-                console.log(`Package.json file is absent from repo`);
+                console.log("\x1b[35m%s\x1b[35m",`Package.json file is absent from repo`);
             } else {
-                console.log('Error processing pakcage values but package file does exist')
+                console.log('\x1b[31m%s\x1b[0m', 'Error processing pakcage values but package file does exist')
             }
         }
 
@@ -409,12 +438,38 @@ class Readme{
         .then(res => res.json())
         .then(data => {
             this.gitRepoDetails = data;
-            readme.deduceValuesFromRepo();
+            this.getUsageScreencap();
+            this.getProjectScreenshot();
+            this.deduceValuesFromRepo();
         })
         .catch((err) => {
             console.log(err);
         })
     }  
+
+    getUsageScreencap(){
+        let usageScreencapPath = this.localRepoPath+'//assets//images//screencap.gif';
+        if(fs.existsSync(usageScreencapPath)){
+            this.usageScreencapPath = usageScreencapPath;
+            // log in green
+            console.log("\x1b[32m%s\x1b[32m", `screen capture path found`);
+        } else {
+            // log in red
+            console.log('\x1b[31m%s\x1b[0m', `screen capture path ${usageScreencapPath} is empty, no usage gif available`)
+        }
+    }
+    
+    getProjectScreenshot(){
+        let projectScreenshot = this.localRepoPath+'//assets//images//screenshot.png';
+        if(fs.existsSync(projectScreenshot)){
+            this.projectScreenshotPath = projectScreenshot;
+            // log in green
+            console.log("\x1b[32m%s\x1b[32m", `screenshot path found`);
+        } else {
+            // log in red
+            console.log('\x1b[31m%s\x1b[0m', `screen capture path ${projectScreenshot} is empty, no usage gif available`)
+        }
+    }
     
     log_state(){
         console.log(`${this.localRepoPath}`);
@@ -451,7 +506,7 @@ function startNewReadmeProcess() {
             if(answers.localRepoPath.trim() != ''){
                 readme = new Readme(answers.localRepoPath.replace(/\\/g, '/'), answers.mode);
             } else {
-                readme = new Readme('C://Users//nicka//Documents//actorLookup', answers.mode);
+                readme = new Readme('C://Users//nicka//Documents//readmeGen', answers.mode);
             }
             readme.buildQuestions();
             readme.getGitRepoNameAndProfileFromUser();
