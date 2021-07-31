@@ -49,23 +49,6 @@ var licenseChoices = [
         },
 ]
 
-var markdown = {
-    projectTitle: `${this.content}`,
-    version: `${this.content}`,
-    profileName: `${this.content}`,
-    contributors: `${this.content}`,
-    description: `${this.content}`,
-    dependencies: `${this.content}`,
-    license: `${this.content}`,
-    motivation: `${this.content}`,
-    installation: `${this.content}`,
-    usage: `${this.content}`,
-    credits: `${this.content}`,
-    features: `${this.content}`,
-    contributing: `${this.content}`,
-    testing: `${this.content}`,
-}
-
 function noPackageError(){
 
 }
@@ -193,13 +176,13 @@ class Readme{
             profileName: new Question({type:'input',initMessage:'Github profile name?\n',name:'Profile Name'}),
             version: new Question({type:'input',initMessage:'Project Version?\n',name:'Version', originValue:null}),
             description: new Question({type:'input',initMessage:'Project Description?\n',name:'Description'}),
-            installation: new Question({type:'input',initMessage:'Installation steps\n',name:'Installation', originValue : null, packageValue:null, automatic:false}),
             dependencies: new Question({type:'input',initMessage:'Add Dependencies More(comma separated)\n',name:'Dependencies', originValue : null}),
+            license: new Question({type:'list',initMessage:'license type?\n',name:'License', choices:licenseChoices}),
+            contributors: new Question({type:'input',initMessage:'Add contributors/collaborators More(comma separated)\n',name:'Contributors', packageValue:null}),
+            installation: new Question({type:'input',initMessage:'Installation steps\n',name:'Installation', originValue : null, packageValue:null, automatic:false}),
             usage: new Question({type:'input',initMessage:'Usage\n',name:'Usage', originValue : null, packageValue:null, automatic:false}),
             credits: new Question({type:'input',initMessage:'Add any people, tech or institutes to credit (comma separated)\n',name:'Credits', originValue : null, packageValue:null, automatic:false}),
-            license: new Question({type:'list',initMessage:'license type?\n',name:'License', choices:licenseChoices}),
             features: new Question({type:'input',initMessage:'What features does the project have?\n',name:'Features', originValue : null, packageValue:null, automatic:false}),
-            contributors: new Question({type:'input',initMessage:'Add contributors/collaborators More(comma separated)\n',name:'Contributors', packageValue:null}),
             contributing: new Question({type:'input',initMessage:'How to contribute to the project?\n',name:'Contributing', originValue : null, packageValue:null, automatic:false}),
             testing: new Question({type:'input',initMessage:'Project testing structure\n',name:'Testing', originValue : null, packageValue:null, automatic:false}),
             contact: new Question({type:'input',initMessage:'How to contact you?\n',name:'Contact', originValue : null, packageValue:null, automatic:false}),
@@ -277,7 +260,7 @@ class Readme{
         this.constructSection(null, this.questions.features);
         
         // Contributors
-        if(this.questions.contributing.content){
+        if(this.questions.contributors.content){
             this.docContent +='## Contributors \n\n';
             // this.constructSection(null, this.questions.contributors);
             for( let contributor of this.questions.contributors.content.trim().split(',')){
