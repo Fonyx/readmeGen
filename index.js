@@ -3,8 +3,13 @@ const md = require('markdown-it')();
 const fs = require('fs');
 const inquirer = require('inquirer');
 const fetch = require('node-fetch');
+const PrettyError = require('pretty-error');
 const MarkdownIt = require('markdown-it');
 var readme;
+var pe = new PrettyError();
+pe.start();
+
+
 var licenseChoices = [
         new inquirer.Separator(' = Simple and Permissive: Can make closed source versions = '),
         {
@@ -60,6 +65,11 @@ var markdown = {
     contributing: `${this.content}`,
     testing: `${this.content}`,
 }
+
+function noPackageError(){
+
+}
+noPackageError.prototype = new Error();
 
 
 class Question{
@@ -301,29 +311,37 @@ class Readme{
         Gets values of concern from package.json file
         specifically: name, version, description, scripts.test, author, license, dependencies
         */
-       // get the json object
-       try{
-           let rawPackage = fs.readFileSync(this.localRepoPath+'/package.json', {encoding:'utf-8', flag:'r'});
-           let packageJson = JSON.parse(rawPackage);
+        // get the json object
+        try{
+            if(fs.existsSync(this.localRepoPath+'/package.json')){
+                let rawPackage = fs.readFileSync(this.localRepoPath+'/package.json', {encoding:'utf-8', flag:'r'});
+                let packageJson = JSON.parse(rawPackage);
+                // set the packageValues for the corresponding question elements
+                // this.questions.projectTitle.packageValue = packageJson.name;
+                this.questions.version.packageValue = packageJson.version;
+                this.questions.description.packageValue = packageJson.description;
+                this.questions.testing.packageValue = packageJson.scripts.test;
+                // this.questions.profileName.packageValue = packageJson.author;
+                this.questions.license.packageValue = packageJson.license;
+                // removing "" and {} from stringified array then switch comma for new line and tab
+                this.questions.dependencies.packageValue = JSON.stringify(packageJson.dependencies)
+                    .replace(/"/g, '')
+                    .replace(/}/, '\n')
+                    .replace(/,/g,'\n\t')
+                    .replace(/{/, '\n\t')
+        
+                this.comparePackageToOrigin();
+            } else {
+                throw new noPackageError();
+            }
 
-            // set the packageValues for the corresponding question elements
-            // this.questions.projectTitle.packageValue = packageJson.name;
-            this.questions.version.packageValue = packageJson.version;
-            this.questions.description.packageValue = packageJson.description;
-            this.questions.testing.packageValue = packageJson.scripts.test;
-            // this.questions.profileName.packageValue = packageJson.author;
-            this.questions.license.packageValue = packageJson.license;
-            // removing "" and {} from stringified array then switch comma for new line and tab
-            this.questions.dependencies.packageValue = JSON.stringify(packageJson.dependencies)
-                .replace(/"/g, '')
-                .replace(/}/, '\n')
-                .replace(/,/g,'\n\t')
-                .replace(/{/, '\n\t')
-
-            this.comparePackageToOrigin();
             
-        }catch(error){
-            console.log(error);
+        }catch(err){
+            if(err instanceof noPackageError){
+                console.log(`Package.json file is absent from repo`);
+            } else {
+                console.log('Error processing pakcage values but package file does exist')
+            }
         }
 
         this.createMsgFromInitMsg();
