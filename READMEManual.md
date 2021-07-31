@@ -1,4 +1,8 @@
 # README Gen
+
+## Version
+1.0.3  
+
 ## Description
 A node project that prompts user for details then generates a linked, badged and polished README.md file and saves it to the directed local repository checkout
 

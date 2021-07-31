@@ -89,7 +89,7 @@ class Question{
         }
     }
 
-    buildMessage(mode){
+    buildMessage(){
         // function that builds the message for the prompt. If the mode is automatic, does not render automatic questions
         if(!this.automatic){
             this.message = this.initMessage;
@@ -217,16 +217,17 @@ class Readme{
         let skippedContent = ['projectTitle','profileName'];
 
         // start with title
-        this.docContent += `# Project: ${this.originRepoName.toUpperCase()}`;
+        this.docContent += `# Project: [${this.questions.projectTitle.content.toUpperCase()}](https://github.com/${this.questions.profileName.content}/${this.questions.projectTitle.content})`;
         this.docContent += '\n\n';
         
         // version
         this.constructSection(null, this.questions.version);
         
-        // make and show badges, show languages used, show commit frequency, show contributors
-        this.docContent += `![badmath](https://img.shields.io/github/languages/count/${this.originOwnerProfile}/${this.originRepoName})`
-        this.docContent += `![badmath](https://img.shields.io/github/commit-activity/m/${this.originOwnerProfile}/${this.originRepoName})`
-        this.docContent += `![badmath](https://img.shields.io/github/contributors/${this.originOwnerProfile}/${this.originRepoName})`
+        // make and show badges,show license, show languages used, show commit frequency, show contributors
+        this.docContent += `![badmath](https://img.shields.io/github/license/${this.questions.profileName.content}/${this.originRepoName})  `;
+        this.docContent += `![badmath](https://img.shields.io/github/languages/count/${this.originOwnerProfile}/${this.originRepoName})  `;
+        this.docContent += `![badmath](https://img.shields.io/github/commit-activity/m/${this.originOwnerProfile}/${this.originRepoName})  `;
+        this.docContent += `![badmath](https://img.shields.io/github/contributors/${this.originOwnerProfile}/${this.originRepoName})  `;
         this.docContent += '\n\n';
         
         // Description
@@ -254,8 +255,7 @@ class Readme{
         this.constructSection(null, this.questions.usage);
         // Credits
         this.constructSection(null, this.questions.credits);
-        // License
-        this.constructSection(null, this.questions.features);
+
         // Features
         this.constructSection(null, this.questions.features);
         
@@ -279,6 +279,7 @@ class Readme{
         this.constructSection(null, this.questions.contact);
         this.docContent += '\n\n';
         this.docContent += '## Checkout my github account '+`[${this.questions.profileName.content}](https://github.com/${this.questions.profileName.content})` 
+        this.docContent += '\n\n';
         this.docContent += '\n\n';
     }
 
@@ -305,7 +306,7 @@ class Readme{
         */
         for (var name in this.questions){
             let currQ = this.questions[name];
-            currQ.buildMessage(this.mode);
+            currQ.buildMessage();
         }
     }
 
@@ -439,9 +440,9 @@ function startNewReadmeProcess() {
             name: 'localRepoPath',
         },{
             type: 'list',
-            message: 'Assume automatic is correct or manually override?',
+            message: 'Manual mode or Automatic-node projects only?',
             name: 'mode',
-            choices: ['automatic', 'manual'],
+            choices: ['manual', 'automatic'],
             default: 0,
         }
         ])
