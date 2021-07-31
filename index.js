@@ -91,6 +91,36 @@ class Question{
         this.originValue = originValue;
     }
 
+    determineContent(){
+        // case where user didn't specify anything
+        if(this.answer !== '' && this.answer !== undefined){
+            this.content = this.answer;
+        } else if(this.originValue !== null){
+            this.content = this.originValue;
+        } else if (this.packageValue !== null){
+            this.content = this.packageValue;
+        } else if(!this.required){
+            console.log(`No value for ${this.name} but not required`)
+        } else {
+            throw new Error('No value for this required question')
+        }
+    }
+
+    buildMessage(mode){
+        // function that builds the message for the prompt. If the mode is automatic, does not render automatic questions
+        if(mode === "manual"){
+            // makes a message out of the origin and package values
+            if(this.originValue !== null){
+                this.message = this.initMessage + 'Auto Read Found: ' + this.originValue + '\n';
+            }else {
+                this.message = this.initMessage + 'Auto Read Found: ' + this.packageValue + '\n';
+            }
+        // if the field is a manual field
+        } else if(!this.automatic){
+            this.message = this.initMessage;
+        }
+    }
+
     async prompt(){
         await inquirer.prompt({
             type: this.type,
@@ -251,32 +281,15 @@ class Readme{
         origin or package in appropriate priority so that the user can keep it or override it;
         */
         for (var name in this.questions){
-            let curQ = this.questions[name];
-            let startMessage = curQ.initMessage + 'Auto Read Found: ';
-            // makes a message out of the origin and package values
-            if(curQ.originValue !== null){
-                curQ.message = startMessage + curQ.originValue + '\n';
-            }else {
-                curQ.message = startMessage + curQ.packageValue + '\n';
-            }
+            let currQ = this.questions[name];
+            currQ.buildMessage(this.mode);
         }
     }
 
     decideQuestionContent(){
         for (let qname in this.questions){
             let currQ = this.questions[qname];
-            // case where user didn't specify anything
-            if(currQ.answer !== '' && currQ.answer !== undefined){
-                currQ.content = currQ.answer;
-            } else if(currQ.originValue !== null){
-                currQ.content = currQ.originValue;
-            } else if (currQ.packageValue !== null){
-                currQ.content = currQ.packageValue;
-            } else if(!currQ.required){
-                console.log(`No value for ${currQ.name} but not required`)
-            } else {
-                throw new Error('No value for this required question')
-            }
+            currQ.determineContent();
         }
     }
 
