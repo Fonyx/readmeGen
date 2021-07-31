@@ -1,14 +1,14 @@
-# Project: ACTORLOOKUP
+# Project: READMEGEN
 
 ## Version
 
-```undefined```
+```1.0.0```
 
-![badmath](https://img.shields.io/github/languages/count/Fonyx/actorLookup)![badmath](https://img.shields.io/github/commit-activity/m/Fonyx/actorLookup)![badmath](https://img.shields.io/github/contributors/Fonyx/actorLookup)
+![badmath](https://img.shields.io/github/languages/count/Fonyx/readmeGen)![badmath](https://img.shields.io/github/commit-activity/m/Fonyx/readmeGen)![badmath](https://img.shields.io/github/contributors/Fonyx/readmeGen)
 
 ## Description
 
-```Group details to be decided```
+```A node project that prompts user for details```
 
 ## Content 
 
@@ -23,41 +23,47 @@
 - [Features](#features)
 - [Contributing](#contributing)
 - [Testing](#testing)
+- [Questions](#questions)
 
 
 ## Installation
 
-```rsetgv ```
+```install ```
 
 ## Dependencies
 
-```undefined```
+```
+	inquirer:^6.3.1
+	markdown-it:^12.1.0
+	node-fetch:^2.6.1
+	pretty-error:^3.0.4
+```
 
 ## Usage
 
-```sertvb```
+```use me```
 
 ## Credits
 
-```sertgh```
+```Usyd, trinity```
 
 ## Features
 
-```sertgh```
+```feature1, feature2```
 
 ## Features
 
-```sertgh```
+```feature1, feature2```
 
 ## Contributing
 
-```wertb```
+```not open to contribution```
 
 ## Contributors
 
-```Fonyx,ChristopherBz,Wgobrie1,EllaFerreira```
+```Fonyx```
 
 ## Testing
 
-```ertb```
+```jest```
 

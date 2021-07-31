@@ -108,17 +108,27 @@ class Question{
 
     buildMessage(mode){
         // function that builds the message for the prompt. If the mode is automatic, does not render automatic questions
-        if(mode === "manual"){
+        if(!this.automatic){
+            this.message = this.initMessage;
+        } else {
             // makes a message out of the origin and package values
             if(this.originValue !== null){
                 this.message = this.initMessage + 'Auto Read Found: ' + this.originValue + '\n';
             }else {
                 this.message = this.initMessage + 'Auto Read Found: ' + this.packageValue + '\n';
             }
-        // if the field is a manual field
-        } else if(!this.automatic){
-            this.message = this.initMessage;
         }
+        // if(mode === "manual"){
+        //     // makes a message out of the origin and package values
+        //     if(this.originValue !== null){
+        //         this.message = this.initMessage + 'Auto Read Found: ' + this.originValue + '\n';
+        //     }else {
+        //         this.message = this.initMessage + 'Auto Read Found: ' + this.packageValue + '\n';
+        //     }
+        // // if the field is a manual field
+        // } else if(!this.automatic){
+        //     this.message = this.initMessage;
+        // }
     }
 
     async prompt(){
@@ -179,6 +189,8 @@ class Readme{
         // note the use of undefined as a question constructor default vs the use of null
         // null means this value cannot be determined - for use in downstream processes - whereas undefined means this will be determined
         this.questions = {
+            projectTitle: new Question({type:'input',initMessage:'Project Title?\n',name:'Project Title'}),
+            profileName: new Question({type:'input',initMessage:'Github profile name?\n',name:'Profile Name'}),
             version: new Question({type:'input',initMessage:'Project Version?\n',name:'Version', originValue:null}),
             contributors: new Question({type:'input',initMessage:'Add contributors/collaborators More(comma separated)\n',name:'Contributors', packageValue:null}),
             description: new Question({type:'input',initMessage:'Project Description?\n',name:'Description'}),
@@ -190,6 +202,7 @@ class Readme{
             features: new Question({type:'input',initMessage:'What features does the project have?\n',name:'Features', originValue : null, packageValue:null, automatic:false}),
             contributing: new Question({type:'input',initMessage:'How to contribute to the project?\n',name:'Contributing', originValue : null, packageValue:null, automatic:false}),
             testing: new Question({type:'input',initMessage:'Project testing structure\n',name:'Testing', originValue : null, packageValue:null, automatic:false}),
+            questions: new Question({type:'input',initMessage:'How to contact you?\n',name:'Questions', originValue : null, packageValue:null, automatic:false}),
         }
     }
 
@@ -217,6 +230,9 @@ class Readme{
 
     constructDocument(){
 
+        // some questions need to be skipped in the contents section, they are in a list
+        let skippedContent = ['projectTitle','profileName'];
+
         // start with title
         this.docContent += `# Project: ${this.originRepoName.toUpperCase()}`;
         this.docContent += '\n\n';
@@ -235,10 +251,13 @@ class Readme{
         // Make Contents and add
         this.docContent +='## Content \n\n';
         for (let qname in this.questions){
-            let question = this.questions[qname];
-            let contentString = `- [${question.name}](#${question.name.toLowerCase()})`;
-            this.docContent += contentString;
-            this.docContent += '\n';
+            // if the question needs to be in the contents section
+            if(!skippedContent.includes(qname)){
+                let question = this.questions[qname];
+                let contentString = `- [${question.name}](#${question.name.toLowerCase()})`;
+                this.docContent += contentString;
+                this.docContent += '\n';
+            }
         }
         this.docContent += '\n\n';
         // Installation
@@ -298,10 +317,10 @@ class Readme{
         Function collects values of interest from github repo details contained in this.gitRepoDetails
         */
         // get repo title from origin and set to question originValue
-        // this.questions.projectTitle.originValue = this.gitRepoDetails.name;
+        this.questions.projectTitle.originValue = this.gitRepoDetails.name;
         
         // get owner name and set to owner question originValue
-        // this.questions.profileName.originValue = this.gitRepoDetails.owner.login;
+        this.questions.profileName.originValue = this.gitRepoDetails.owner.login;
 
         // get description and set to owner question originValue
         this.questions.description.originValue = this.gitRepoDetails.description;
@@ -427,7 +446,7 @@ function startNewReadmeProcess() {
             if(answers.localRepoPath.trim() != ''){
                 readme = new Readme(answers.localRepoPath.replace(/\\/g, '/'), answers.mode);
             } else {
-                readme = new Readme('C://Users//nicka//Documents//actorLookup', answers.mode);
+                readme = new Readme('C://Users//nicka//Documents//readmeGen', answers.mode);
             }
             readme.buildQuestions();
             readme.getGitRepoNameAndProfileFromUser();
