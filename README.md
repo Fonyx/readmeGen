@@ -16,18 +16,8 @@
 
 - [Version](#version)
 - [Description](#description)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Credits](#credits)
-- [Features](#features)
-- [Contributing](#contributing)
 - [Testing](#testing)
-- [Contact](#contact)
 
-
-## Installation
-
-```insall me then run  ```
 
 
 
@@ -43,37 +33,17 @@
 
 
 
-## Usage
-
-```use me after that  ```
-
 ## Usage Video
 
 ![Screenshot](https://github.com/Fonyx/readmeGen/blob/main/assets/images/screencap.gif?raw=true "usage screencap")  
-
-## Credits
-
-```me, my friend  ```
-
-## Features
-
-```feature1, feature2  ```
 
 ## Contributors 
 
 [Fonyx](https://github.com/Fonyx)
 
-## Contributing
-
-```no contributions  ```
-
 ## Testing
 
-```jest  ```
-
-## Contact
-
-```nick@fake.me  ```
+```echo "Error: no test specified" && exit 1  ```
 
 
 

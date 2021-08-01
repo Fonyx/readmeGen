@@ -542,9 +542,27 @@ class Readme{
         }
     }
 
-    saveDocument(){
-        fs.writeFileSync('README.md', this.docContent, {encoding: 'utf-8', flag: 'w'});
-        console.log('Written to file successfully');
+   async saveDocument(){
+        if(fs.existsSync('README.md')){
+            await inquirer.prompt({
+                type: 'confirm',
+                message: 'override existing readme?',
+                name: 'override',
+                default: true,
+            }).then((answers) => {
+                if (answers.override){
+                    fs.writeFileSync('README.md', this.docContent, {encoding: 'utf-8', flag: 'w'});
+                    console.log('Written to file successfully');
+                } else {
+                    console.log('\x1b[31m%s\x1b[0m', 'File abandoned by user')
+                }
+            }).catch((err) => {
+                console.error(err)
+            })
+        } else{
+            fs.writeFileSync('README.md', this.docContent, {encoding: 'utf-8', flag: 'w'});
+            console.log('Written to file successfully');
+        }
     }
 }
 
