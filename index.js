@@ -217,7 +217,7 @@ class Readme{
         let skippedContent = ['projectTitle','profileName', 'version', 'description'];
 
         // start with title
-        this.docContent += `# Project: [${this.questions.projectTitle.content}](https://github.com/${this.questions.profileName.content}/${this.questions.projectTitle.content})`;
+        this.docContent += `# Project: [${this.questions.projectTitle.content}](https://github.com/${this.questions.profileName.content}/${this.questions.projectTitle.originValue})`;
         this.docContent += '\n\n';
         
         // version
@@ -344,11 +344,7 @@ class Readme{
                 this.docContent += `## ${question.name}`;
             }
             this.docContent += '\n\n';
-            this.docContent += '```';
-            this.docContent += '\n\n';
             this.docContent += question.content+'  ';
-            this.docContent += '\n\n';
-            this.docContent += '```';
             this.docContent += '\n\n';
         }
     }

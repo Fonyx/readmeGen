@@ -1,32 +1,25 @@
-# Project: [Readme Generator](https://github.com/Fonyx/Readme Generator)
+# Project: [Readme Generator](https://github.com/Fonyx/readmeGen)
 
 ## Version
 
-```
-
 1.0.0  
-
-```
 
 ![badmath](https://img.shields.io/github/license/Fonyx/readmeGen)  ![badmath](https://img.shields.io/github/languages/count/Fonyx/readmeGen)  ![badmath](https://img.shields.io/github/commit-activity/m/Fonyx/readmeGen)  ![badmath](https://img.shields.io/github/contributors/Fonyx/readmeGen)  
 
 ## Description
 
-```
-
-My mantra is that if it gets done, it gets done well, if it gets done twice, it gets automated. This is an automated readme generator and it is designed to save time for all future projects. There is a  tradeoff between the level of readme customization, and the promptness of the process. Bearing that in mind, some avenues for readme customization have been left unexplored simply to reduce complexity. In the process of building this I learned a lot about distinguishing vanity metrics from utility metrics. I have added some visual metrics but where possible, I have opted for meaningful design choices over flash.  
-
-```
+My mantra is that if it gets done, it gets done well, if it gets done twice, it gets automated. 
+This is an automated readme generator and it is designed to save time for all future projects. 
+There is a  tradeoff between the level of readme customization, and the promptness of the process. 
+Bearing that in mind, some avenues for readme customization have been left unexplored simply to reduce complexity. 
+In the process of building this I learned a lot about distinguishing vanity metrics from utility metrics. 
+I have added some visual metrics but where possible, I have opted for meaningful design choices over flash.  
 
 ![Alt text](https://github.com/Fonyx/readmeGen/blob/main/assets/images/screenshot.PNG?raw=true "project screenshot")  
 
 ## License
 
-```
-
 MIT License  
-
-```
 
 
 
@@ -69,8 +62,6 @@ MIT License
 
 ## Usage
 
-```
-
 1. Make your own project (not packaged), best to use github
 2. Run index.js entry point
 3. Enter local path of repo
@@ -99,8 +90,6 @@ Background collections:
 
 NOTE: if there is a package.json file but any of the readPackage.json commands find an empty value or a clashed value with the origin repo, console alert package.json doesn't match origin repo details  
 
-```
-
 ## Video
 
 ![Screenshot](https://github.com/Fonyx/readmeGen/blob/main/assets/images/screencap.gif?raw=true "usage screencap")  
@@ -111,62 +100,34 @@ NOTE: if there is a package.json file but any of the readPackage.json commands f
 
 ## Installation
 
-```
-
 1. Install Node.js on your pc
 2. Checkout project
 3. Run npm install to download dependencies
 4. Read project readme for details on repo structure, specifically:
 	- screenshot and screengrab files in assets/images/screenshot.png + screencap.gif  
 
-```
-
 ## Credits
 
-```
-
-personal project
-  
-
-```
+personal project  
 
 ## Features
-
-```
 
 1: Automatic reading of git repo
 2: Automatic reading of package.json file
 3: Linking of contributors, owner and dependencies to their github and npm repositories
 4: Embedding of screenshot and screencap files  
 
-```
-
 ## Contributing
 
-```
-
-This is a personal project, it is not accepting pull requests
-  
-
-```
+This is a personal project, it is not accepting pull requests  
 
 ## Testing
 
-```
-
-no testing framework has been deployed for this project
-  
-
-```
+no testing framework has been deployed for this project  
 
 ## Questions
 
-```
-
-Contact me through nick.alex.ritchie@gmail.com
-  
-
-```
+Contact me by email at nick.alex.ritchie@gmail.com  
 
 
 
