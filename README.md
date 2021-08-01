@@ -12,20 +12,9 @@
 
 ![Alt text](https://github.com/Fonyx/readmeGen/blob/main/assets/images/screenshot.PNG?raw=true "project screenshot")  
 
-## License
-
-```MIT License  ```
-
-
-
-```A short and simple permissive license with conditions only requiring preservation of copyright and license notices. Licensed works, modifications, and larger works may be distributed under different terms and without source code.  ```
-
-```commercial-use,modifications,distribution,private-use  ```
-
 ## Content 
 
 - [Version](#version)
-- [License](#license)
 - [Description](#description)
 - [Dependencies](#dependencies)
 - [Testing](#testing)

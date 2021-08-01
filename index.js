@@ -83,7 +83,7 @@ class Question{
         } else if (this.packageValue !== null){
             this.content = this.packageValue;
         } else if(!this.required){
-            console.log(`No value for ${this.name} but not required`)
+            console.log("\x1b[35m%s\x1b[0m" ,`No value for ${this.name} but not required`)
         } else {
             throw new Error('No value for this required question')
         }
@@ -182,8 +182,8 @@ class Readme{
             version: new Question({type:'input',initMessage:'Project Version?\n',name:'Version', originValue:null}),
             license: new Question({type:'list',initMessage:'license type?\n',name:'License', choices:licenseChoices}),
             description: new Question({type:'input',initMessage:'Project Description?\n',name:'Description'}),
-            installation: new Question({type:'input',initMessage:'Installation steps\n',name:'Installation', originValue : null, packageValue:null, automatic:false}),
             dependencies: new Question({type:'input',initMessage:'Add Dependencies More(comma separated)\n',name:'Dependencies', originValue : null}),
+            installation: new Question({type:'input',initMessage:'Installation steps\n',name:'Installation', originValue : null, packageValue:null, automatic:false}),
             usage: new Question({type:'input',initMessage:'Usage\n',name:'Usage', originValue : null, packageValue:null, automatic:false}),
             credits: new Question({type:'input',initMessage:'Add any people, tech or institutes to credit (comma separated)\n',name:'Credits', originValue : null, packageValue:null, automatic:false}),
             features: new Question({type:'input',initMessage:'What features does the project have?\n',name:'Features', originValue : null, packageValue:null, automatic:false}),
