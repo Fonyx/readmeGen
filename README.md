@@ -10,8 +10,6 @@
 
 ```A node project that prompts user for details  ```
 
-![Alt text](https://github.com/Fonyx/readmeGen/blob/main/assets/images/screenshot.PNG?raw=true "project screenshot")  
-
 ## License
 
 ```MIT License  ```
@@ -31,13 +29,7 @@
 - [Dependencies](#dependencies)
 - [Contributors](#contributors)
 - [License](#license)
-- [Usage](#usage)
-- [Installation](#installation)
-- [Credits](#credits)
-- [Features](#features)
-- [Contributing](#contributing)
 - [Testing](#testing)
-- [Questions](#questions)
 
 
 
@@ -54,39 +46,15 @@
 
 
 
-## Usage
-
-```to use my project, do this  ```
-
 ![Screenshot](https://github.com/Fonyx/readmeGen/blob/main/assets/images/screencap.gif?raw=true "usage screencap")  
 
 ## Contributors 
 
 [Fonyx](https://github.com/Fonyx)
 
-## Installation
-
-```to install do that  ```
-
-## Credits
-
-```nick, usyd, trinity  ```
-
-## Features
-
-```automatic package reading, automatic github repo reading  ```
-
-## Contributing
-
-```closed to contributions, open to suggestions  ```
-
 ## Testing
 
-```jest  ```
-
-## Questions
-
-```nick@fakwe.me  ```
+```echo "Error: no test specified" && exit 1  ```
 
 
 
