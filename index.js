@@ -126,9 +126,10 @@ class Question{
 }
 
 class Readme{
-    constructor(localRepoPath, mode){
+    constructor(localRepoPath, mode, inputMethod){
         this.localRepoPath = localRepoPath;
         this.mode = mode;
+        this.inputMethod = inputMethod;
         this.originRepoName;
         this.originOwnerProfile;
         this.gitRepoDetails;
@@ -176,15 +177,15 @@ class Readme{
             profileName: new Question({type:'input',initMessage:'Github profile name?\n',name:'Profile Name'}),
             version: new Question({type:'input',initMessage:'Project Version?\n',name:'Version', originValue:null}),
             license: new Question({type:'list',initMessage:'license type?\n',name:'License', choices:licenseChoices}),
-            description: new Question({type:'input',initMessage:'Project Description?\n',name:'Description'}),
-            // dependencies: new Question({type:'input',initMessage:'Add Dependencies More(comma separated)\n',name:'Dependencies', originValue : null}),
-            installation: new Question({type:'input',initMessage:'Installation steps\n',name:'Installation', originValue : null, packageValue:null, automatic:false}),
-            usage: new Question({type:'input',initMessage:'Usage\n',name:'Usage', originValue : null, packageValue:null, automatic:false}),
-            credits: new Question({type:'input',initMessage:'Add any people, tech or institutes to credit\n',name:'Credits', originValue : null, packageValue:null, automatic:false}),
-            features: new Question({type:'input',initMessage:'What features does the project have?\n',name:'Features', originValue : null, packageValue:null, automatic:false}),
-            contributing: new Question({type:'input',initMessage:'How to contribute to the project?\n',name:'Contributing', originValue : null, packageValue:null, automatic:false}),
-            testing: new Question({type:'input',initMessage:'Project testing structure\n',name:'Testing', originValue : null, packageValue:null, automatic:false}),
-            contact: new Question({type:'input',initMessage:'How to contact you?\n',name:'Contact', originValue : null, packageValue:null, automatic:false}),
+            description: new Question({type:this.inputMethod,initMessage:'Project Description?\n',name:'Description'}),
+            // dependencies: new Question({type:this.inputMethod,initMessage:'Add Dependencies More(comma separated)\n',name:'Dependencies', originValue : null}),
+            usage: new Question({type:this.inputMethod,initMessage:'Usage\n',name:'Usage', originValue : null, packageValue:null, automatic:false}),
+            installation: new Question({type:this.inputMethod,initMessage:'Installation steps\n',name:'Installation', originValue : null, packageValue:null, automatic:false}),
+            credits: new Question({type:this.inputMethod,initMessage:'Add any people, tech or institutes to credit\n',name:'Credits', originValue : null, packageValue:null, automatic:false}),
+            features: new Question({type:this.inputMethod,initMessage:'What features does the project have?\n',name:'Features', originValue : null, packageValue:null, automatic:false}),
+            contributing: new Question({type:this.inputMethod,initMessage:'How to contribute to the project?\n',name:'Contributing', originValue : null, packageValue:null, automatic:false}),
+            testing: new Question({type:this.inputMethod,initMessage:'Project testing structure\n',name:'Testing', originValue : null, packageValue:null, automatic:false}),
+            questions: new Question({type:this.inputMethod,initMessage:'How to contact you?\n',name:'Questions', originValue : null, packageValue:null, automatic:false}),
         }
     }
 
@@ -213,7 +214,7 @@ class Readme{
     constructDocument(){
 
         // some questions need to be skipped in the contents section, they are in a list
-        let skippedContent = ['projectTitle','profileName', 'version', 'description'];
+        let skippedContent = ['projectTitle','profileName', 'version', 'description', 'usage'];
 
         // start with title
         this.docContent += `# Project: [${this.questions.projectTitle.content}](https://github.com/${this.questions.profileName.content}/${this.questions.projectTitle.content})`;
@@ -261,7 +262,7 @@ class Readme{
         }
         // add usageVideo as they aren't a question but part of the readme
         if(this.usageScreencapPath){
-            this.docContent += `- [Usage Video](#usage-video)`;
+            this.docContent += `- [Usage](#usage)`;
             this.docContent += '\n';
         }
         // add contributors as they aren't a question but part of the readme
@@ -282,8 +283,6 @@ class Readme{
             }
         }
         this.docContent += '\n\n';
-        // Installation
-        this.constructSection(null, this.questions.installation);
         // Dependencies
         if(this.dependencies){
             this.docContent += '\n\n';
@@ -295,22 +294,13 @@ class Readme{
             }
             this.docContent += '\n\n';
         }  
-
         // Usage
         this.constructSection(null, this.questions.usage);
         if(this.usageScreencapPath){
-            this.docContent += '## Usage Video';
-            this.docContent += '\n\n';
             this.docContent += `![Screenshot](https://github.com/${this.questions.profileName.content}/${this.originRepoName}/blob/main/assets/images/screencap.gif?raw=true "usage screencap")  `;
             this.docContent += '\n\n';
         }
 
-        // Credits
-        this.constructSection(null, this.questions.credits);
-
-        // Features
-        this.constructSection(null, this.questions.features);
-        
         // Contributors
         if(this.contributors){
             this.docContent +='## Contributors \n\n';
@@ -320,6 +310,15 @@ class Readme{
                 this.docContent += '\n\n';
             }
         }
+        
+        // Installation
+        this.constructSection(null, this.questions.installation);
+
+        // Credits
+        this.constructSection(null, this.questions.credits);
+
+        // Features
+        this.constructSection(null, this.questions.features);
 
         // Contribute
         this.constructSection(null, this.questions.contributing);
@@ -328,7 +327,7 @@ class Readme{
         this.constructSection(null, this.questions.testing);
 
         // Contact and profile github link
-        this.constructSection(null, this.questions.contact);
+        this.constructSection(null, this.questions.questions);
         this.docContent += '\n\n';
         this.docContent += '## Checkout my github account '+`[${this.questions.profileName.content}](https://github.com/${this.questions.profileName.content})` 
         this.docContent += '\n\n';
@@ -398,6 +397,15 @@ class Readme{
         } else {
             // log in red
             console.log('\x1b[31m%s\x1b[0m', `No github description for ${this.localRepoPath}`);
+        }
+
+        // get license and set to owner question originValue
+        if(this.gitRepoDetails.license){
+            this.questions.license.originValue = this.gitRepoDetails.license.name;
+            console.log("\x1b[32m%s\x1b[32m", `Found github license ${this.gitRepoDetails.license.name}`);
+        } else {
+            // log in red
+            console.log('\x1b[31m%s\x1b[0m', `No github license for ${this.localRepoPath}`);
         }
 
         // get contributors
@@ -593,15 +601,21 @@ function startNewReadmeProcess() {
             name: 'mode',
             choices: ['manual', 'automatic'],
             default: 0,
+        }, {
+            type: 'list',
+            message: 'Use Inputs (tiny readme) or Editors (sophisticated readme)',
+            name: 'inputMethod',
+            choices: ['input', 'editor'],
+            default: 0,
         }
         ])
         .then((answers) => {
             console.log(answers.localRepoPath);
             if(answers.localRepoPath.trim() != ''){
-                var readme = new Readme(answers.localRepoPath.replace(/\\/g, '/'), answers.mode);
+                var readme = new Readme(answers.localRepoPath.replace(/\\/g, '/'), answers.mode, answers.inputMethod);
             } else {
                 console.log('\x1b[31m%s\x1b[0m', 'Using default path for testing')
-                var readme = new Readme('C://Users//nicka//Documents//readmeGen', answers.mode);
+                var readme = new Readme('C://Users//nicka//Documents//readmeGen', answers.mode, answers.inputMethod);
             }
 
             readme.buildQuestions();

@@ -12,12 +12,32 @@
 
 ![Alt text](https://github.com/Fonyx/readmeGen/blob/main/assets/images/screenshot.PNG?raw=true "project screenshot")  
 
+## License
+
+```MIT License  ```
+
+
+
+### Details  
+
+```A short and simple permissive license with conditions only requiring preservation of copyright and license notices. Licensed works, modifications, and larger works may be distributed under different terms and without source code.  ```
+
+### Permissions  
+
+```commercial-use,modifications,distribution,private-use  ```
+
 ## Content 
 
 - [Dependencies](#dependencies)
-- [Usage Video](#usage-video)
+- [Usage](#usage)
 - [Contributors](#contributors)
+- [License](#license)
+- [Installation](#installation)
+- [Credits](#credits)
+- [Features](#features)
+- [Contributing](#contributing)
 - [Testing](#testing)
+- [Questions](#questions)
 
 
 
@@ -34,7 +54,9 @@
 
 
 
-## Usage Video
+## Usage
+
+```srgb  ```
 
 ![Screenshot](https://github.com/Fonyx/readmeGen/blob/main/assets/images/screencap.gif?raw=true "usage screencap")  
 
@@ -42,9 +64,29 @@
 
 [Fonyx](https://github.com/Fonyx)
 
+## Installation
+
+```srdtyb  ```
+
+## Credits
+
+```rtb  ```
+
+## Features
+
+```rtb  ```
+
+## Contributing
+
+```rtb  ```
+
 ## Testing
 
-```echo "Error: no test specified" && exit 1  ```
+```rtb  ```
+
+## Questions
+
+```rtb  ```
 
 
 
