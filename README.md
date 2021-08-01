@@ -14,14 +14,15 @@
 
 ## Content 
 
-- [Version](#version)
-- [Description](#description)
+- [Dependencies](#dependencies)
+- [Usage Video](#usage-video)
+- [Contributors](#contributors)
 - [Testing](#testing)
 
 
 
 
-### Dependencies  
+## Dependencies  
 
 [inquirer:^6.3.1](https://www.npmjs.com/package/inquirer)
 

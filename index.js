@@ -213,7 +213,7 @@ class Readme{
     constructDocument(){
 
         // some questions need to be skipped in the contents section, they are in a list
-        let skippedContent = ['projectTitle','profileName'];
+        let skippedContent = ['projectTitle','profileName', 'version', 'description'];
 
         // start with title
         this.docContent += `# Project: [${this.questions.projectTitle.content}](https://github.com/${this.questions.profileName.content}/${this.questions.projectTitle.content})`;
@@ -254,6 +254,21 @@ class Readme{
 
         // Make Contents and add
         this.docContent +='## Content \n\n';
+        // add dependencies as they aren't a question but part of the readme
+        if(this.dependencies){
+            this.docContent += `- [Dependencies](#dependencies)`;
+            this.docContent += '\n';
+        }
+        // add usageVideo as they aren't a question but part of the readme
+        if(this.usageScreencapPath){
+            this.docContent += `- [Usage Video](#usage-video)`;
+            this.docContent += '\n';
+        }
+        // add contributors as they aren't a question but part of the readme
+        if(this.contributors){
+            this.docContent += `- [Contributors](#contributors)`;
+            this.docContent += '\n';
+        }
         for (let qname in this.questions){
             let question = this.questions[qname];
             // if question has content
@@ -272,7 +287,7 @@ class Readme{
         // Dependencies
         if(this.dependencies){
             this.docContent += '\n\n';
-            this.docContent += '### Dependencies  \n\n';
+            this.docContent += '## Dependencies  \n\n';
             for(let dependencyName in this.dependencies){
                 let dependency = this.dependencies[dependencyName];
                 this.docContent += `[${dependencyName}:${dependency}](https://www.npmjs.com/package/${dependencyName})`;
