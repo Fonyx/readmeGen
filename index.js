@@ -176,10 +176,10 @@ class Readme{
             projectTitle: new Question({type:'input',initMessage:'Project Title?\n',name:'Project Title'}),
             profileName: new Question({type:'input',initMessage:'Github profile name?\n',name:'Profile Name'}),
             version: new Question({type:'input',initMessage:'Project Version?\n',name:'Version', originValue:null}),
-            license: new Question({type:'list',initMessage:'license type?\n',name:'License', choices:licenseChoices}),
             description: new Question({type:this.inputMethod,initMessage:'Project Description?\n',name:'Description'}),
             // dependencies: new Question({type:this.inputMethod,initMessage:'Add Dependencies More(comma separated)\n',name:'Dependencies', originValue : null}),
             usage: new Question({type:this.inputMethod,initMessage:'Usage\n',name:'Usage', originValue : null, packageValue:null, automatic:false}),
+            license: new Question({type:'list',initMessage:'license type?\n',name:'License', choices:licenseChoices}),
             installation: new Question({type:this.inputMethod,initMessage:'Installation steps\n',name:'Installation', originValue : null, packageValue:null, automatic:false}),
             credits: new Question({type:this.inputMethod,initMessage:'Add any people, tech or institutes to credit\n',name:'Credits', originValue : null, packageValue:null, automatic:false}),
             features: new Question({type:this.inputMethod,initMessage:'What features does the project have?\n',name:'Features', originValue : null, packageValue:null, automatic:false}),
@@ -260,7 +260,7 @@ class Readme{
             this.docContent += `- [Dependencies](#dependencies)`;
             this.docContent += '\n';
         }
-        // add dependencies as they aren't a question but part of the readme
+        // add video as it isn't a question
         if(this.usageScreencapPath){
             this.docContent += `- [Video](#video)`;
             this.docContent += '\n';
@@ -345,7 +345,9 @@ class Readme{
             }
             this.docContent += '\n\n';
             this.docContent += '```';
+            this.docContent += '\n\n';
             this.docContent += question.content+'  ';
+            this.docContent += '\n\n';
             this.docContent += '```';
             this.docContent += '\n\n';
         }
@@ -594,7 +596,7 @@ function startNewReadmeProcess() {
     inquirer.prompt([
         {
             type: 'input',
-            message: 'local repository path',
+            message: 'repository path',
             name: 'localRepoPath',
         },{
             type: 'list',
