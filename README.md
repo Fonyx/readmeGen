@@ -1,4 +1,4 @@
-# Project: [READMEGEN](https://github.com/Fonyx/readmeGen)
+# Project: [readmeGen](https://github.com/Fonyx/readmeGen)
 
 ## Version
 
@@ -10,26 +10,26 @@
 
 ```A node project that prompts user for details  ```
 
-![Screenshot](C://Users//nicka//Documents//readmeGen//assets//images//screenshot.png)
+![Alt text](https://github.com/Fonyx/readmeGen/blob/main/assets/images/screenshot.PNG?raw=true "project screenshot")  
+
+## License
+
+```MIT License  ```
+
+
+
+```A short and simple permissive license with conditions only requiring preservation of copyright and license notices. Licensed works, modifications, and larger works may be distributed under different terms and without source code.  ```
+
+```commercial-use,modifications,distribution,private-use  ```
 
 ## Content 
 
 - [Version](#version)
+- [License](#license)
 - [Description](#description)
-- [Installation](#installation)
 - [Dependencies](#dependencies)
-- [Usage](#usage)
-- [Credits](#credits)
-- [Features](#features)
-- [Contributors](#contributors)
-- [Contributing](#contributing)
 - [Testing](#testing)
-- [Contact](#contact)
 
-
-## Installation
-
-```install  ```
 
 ## Dependencies
 
@@ -40,33 +40,17 @@
 	pretty-error:^3.0.4
   ```
 
-## Usage
+## Usage Video
 
-```use  ```
-
-## Credits
-
-```ertvb, werv,   ```
-
-## Features
-
-```feature1, feature2  ```
+![Screenshot](https://github.com/Fonyx/readmeGen/blob/main/assets/images/screencap.gif?raw=true "usage screencap")  
 
 ## Contributors 
 
 [Fonyx](https://github.com/Fonyx)
 
-## Contributing
-
-```no  ```
-
 ## Testing
 
-```jest  ```
-
-## Contact
-
-```no  ```
+```echo "Error: no test specified" && exit 1  ```
 
 
 

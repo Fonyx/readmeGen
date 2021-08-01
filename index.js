@@ -13,39 +13,39 @@ pe.start();
 var licenseChoices = [
         new inquirer.Separator(' = Simple and Permissive: Can make closed source versions = '),
         {
-            name: '\tMIT License',
+            name: 'MIT License',
         },
         new inquirer.Separator(' = Sharing improvements: Cannot make closed source versions = '),
         {
-            name: '\tGNU General Purpose License v3.0',
+            name: 'GNU General Public License v3.0',
         },
         new inquirer.Separator(' = Other Common Licenses on Github = '),
         {
-            name: '\tApache License 2.0',
+            name: 'Apache License 2.0',
         },{
-            name: '\tBSD 2-Clause "Simplified" License',
+            name: 'BSD 2-Clause "Simplified" License',
         },{
-            name: '\tBSD 3-Clause "New" or "Revised" License',
+            name: 'BSD 3-Clause "New" or "Revised" License',
         },{
-            name: '\tBoost Software License 1.0',
+            name: 'Boost Software License 1.0',
         },{
-            name: '\tCreative Commons Zero v1.0 Universal',
+            name: 'Creative Commons Zero v1.0 Universal',
         },{
-            name: '\tEclipse Public License 2.0',
+            name: 'Eclipse Public License 2.0',
         },{
-            name: '\tGNU Affero General Public License v3.0',
+            name: 'GNU Affero General Public License v3.0',
         },{
-            name: '\tGNU General Public License v2.0',
+            name: 'GNU General Public License v2.0',
         },{
-            name: '\tGNU Lesser General Public License v2.1',
+            name: 'GNU Lesser General Public License v2.1',
         },{
-            name: '\tMozilla Public License 2.0',
+            name: 'Mozilla Public License 2.0',
         },{
-            name: '\tThe Unlicense',
+            name: 'The Unlicense',
         },{
-            name: '\tMore: https://choosealicense.com/licenses/',
+            name: 'More: https://choosealicense.com/licenses/',
         },{
-            name: '\tNone: https://choosealicense.com/no-permission/',
+            name: 'None: https://choosealicense.com/no-permission/',
         },
 ]
 
@@ -137,6 +137,10 @@ class Readme{
         this.originRepoName;
         this.originOwnerProfile;
         this.gitRepoDetails;
+        this.contributors = undefined;
+        this.licenses = undefined;
+        this.licenseDescription = undefined;
+        this.licensePermissions = undefined;
         this.docContent = '';
         this.questions = undefined;
         this.usageScreencapPath = undefined;
@@ -164,6 +168,7 @@ class Readme{
             }            
         }
         this.decideQuestionContent();
+        await this.getLicensePermissionsFromLicenseName();
         this.constructDocument();
         this.saveDocument();
     }
@@ -182,7 +187,6 @@ class Readme{
             usage: new Question({type:'input',initMessage:'Usage\n',name:'Usage', originValue : null, packageValue:null, automatic:false}),
             credits: new Question({type:'input',initMessage:'Add any people, tech or institutes to credit (comma separated)\n',name:'Credits', originValue : null, packageValue:null, automatic:false}),
             features: new Question({type:'input',initMessage:'What features does the project have?\n',name:'Features', originValue : null, packageValue:null, automatic:false}),
-            contributors: new Question({type:'input',initMessage:'Add contributors/collaborators More(comma separated)\n',name:'Contributors', packageValue:null}),
             contributing: new Question({type:'input',initMessage:'How to contribute to the project?\n',name:'Contributing', originValue : null, packageValue:null, automatic:false}),
             testing: new Question({type:'input',initMessage:'Project testing structure\n',name:'Testing', originValue : null, packageValue:null, automatic:false}),
             contact: new Question({type:'input',initMessage:'How to contact you?\n',name:'Contact', originValue : null, packageValue:null, automatic:false}),
@@ -217,7 +221,7 @@ class Readme{
         let skippedContent = ['projectTitle','profileName'];
 
         // start with title
-        this.docContent += `# Project: [${this.questions.projectTitle.content.toUpperCase()}](https://github.com/${this.questions.profileName.content}/${this.questions.projectTitle.content})`;
+        this.docContent += `# Project: [${this.questions.projectTitle.content}](https://github.com/${this.questions.profileName.content}/${this.questions.projectTitle.content})`;
         this.docContent += '\n\n';
         
         // version
@@ -232,9 +236,26 @@ class Readme{
         
         // Description
         this.constructSection(null, this.questions.description);
-        this.docContent += `![Screenshot](${this.projectScreenshotPath})`;
-        this.docContent += '\n\n';
+        if(this.projectScreenshotPath){
+            this.docContent += `![Alt text](https://github.com/${this.questions.profileName.content}/${this.originRepoName}/blob/main/assets/images/screenshot.PNG?raw=true "project screenshot")  `;
+            this.docContent += '\n\n';
+        }
 
+        // License
+        this.constructSection(null, this.questions.license); 
+        if(this.licenseDescription && this.licensePermissions){
+            this.docContent += '\n\n';
+            this.docContent += '### Details  \n\n';
+            this.docContent += '```';
+            this.docContent += this.licenseDescription+'  ';
+            this.docContent += '```';
+            this.docContent += '\n\n';
+            this.docContent += '### Permissions  \n\n';
+            this.docContent += '```';
+            this.docContent += this.licensePermissions.toString()+'  ';
+            this.docContent += '```';
+            this.docContent += '\n\n';
+        }           
 
         // Make Contents and add
         this.docContent +='## Content \n\n';
@@ -257,6 +278,13 @@ class Readme{
         this.constructSection(null, this.questions.dependencies);
         // Usage
         this.constructSection(null, this.questions.usage);
+        if(this.usageScreencapPath){
+            this.docContent += '## Usage Video';
+            this.docContent += '\n\n';
+            this.docContent += `![Screenshot](https://github.com/${this.questions.profileName.content}/${this.originRepoName}/blob/main/assets/images/screencap.gif?raw=true "usage screencap")  `;
+            this.docContent += '\n\n';
+        }
+
         // Credits
         this.constructSection(null, this.questions.credits);
 
@@ -264,10 +292,10 @@ class Readme{
         this.constructSection(null, this.questions.features);
         
         // Contributors
-        if(this.questions.contributors.content){
+        if(this.contributors){
             this.docContent +='## Contributors \n\n';
             // this.constructSection(null, this.questions.contributors);
-            for( let contributor of this.questions.contributors.content.trim().split(',')){
+            for( let contributor of this.contributors.trim().split(',')){
                 this.docContent += `[${contributor}](https://github.com/${contributor})` 
                 this.docContent += '\n\n';
             }
@@ -331,7 +359,7 @@ class Readme{
             console.log("\x1b[32m%s\x1b[32m", `Found github repo name ${this.gitRepoDetails.name}`);
         } else {
             // log in red
-            console.log('\x1b[31m%s\x1b[0m', `Not github repo name for ${this.localRepoPath}`);
+            console.log('\x1b[31m%s\x1b[0m', `No github repo name for ${this.localRepoPath}`);
         }
 
         // get owner name and set to owner question originValue
@@ -349,7 +377,7 @@ class Readme{
             console.log("\x1b[32m%s\x1b[32m", `Found github description ${this.gitRepoDetails.description}`);
         } else {
             // log in red
-            console.log('\x1b[31m%s\x1b[0m', `Not github description for ${this.localRepoPath}`);
+            console.log('\x1b[31m%s\x1b[0m', `No github description for ${this.localRepoPath}`);
         }
 
         // get contributors
@@ -360,11 +388,11 @@ class Readme{
                 return currentValue.login;
             })
             if(contributors){
-                this.questions.contributors.originValue = contributors.toString();
-                console.log("\x1b[32m%s\x1b[32m", `Found github contributors ${contributors}`);
+                this.contributors = contributors.toString();
+                console.log("\x1b[32m%s\x1b[32m", `Found github contributors ${contributors.toString()}`);
             } else {
                 // log in red
-                console.log('\x1b[31m%s\x1b[0m', `Not github contributors for ${this.localRepoPath}`);
+                console.log('\x1b[31m%s\x1b[0m', `No github contributors for ${this.localRepoPath}`);
             }
             this.deduceValuesFromPackage();
         })
@@ -447,6 +475,21 @@ class Readme{
         })
     }  
 
+    async getLicenses(){
+        this.licenses = await fetch('https://api.github.com/licenses').then(res => res.json());
+    }
+
+    async getLicensePermissionsFromLicenseName(){
+        for (let license of this.licenses){
+            if (license.name === this.questions.license.content){
+                
+                let licenseDetails = await fetch(license.url).then(res => res.json());
+                this.licenseDescription = licenseDetails.description;
+                this.licensePermissions = licenseDetails.permissions;
+            }
+        }
+    }
+
     getUsageScreencap(){
         let usageScreencapPath = this.localRepoPath+'//assets//images//screencap.gif';
         if(fs.existsSync(usageScreencapPath)){
@@ -510,6 +553,7 @@ function startNewReadmeProcess() {
             }
             readme.buildQuestions();
             readme.getGitRepoNameAndProfileFromUser();
+            readme.getLicenses();
             readme.getGitRepoDetails();
         })
 
