@@ -260,6 +260,11 @@ class Readme{
             this.docContent += `- [Dependencies](#dependencies)`;
             this.docContent += '\n';
         }
+        // add dependencies as they aren't a question but part of the readme
+        if(this.usageScreencapPath){
+            this.docContent += `- [Video](#video)`;
+            this.docContent += '\n';
+        }
         // add contributors as they aren't a question but part of the readme
         if(this.contributors){
             this.docContent += `- [Contributors](#contributors)`;
@@ -292,6 +297,7 @@ class Readme{
         // Usage
         this.constructSection(null, this.questions.usage);
         if(this.usageScreencapPath){
+            this.docContent +='## Video\n\n';
             this.docContent += `![Screenshot](https://github.com/${this.questions.profileName.content}/${this.originRepoName}/blob/main/assets/images/screencap.gif?raw=true "usage screencap")  `;
             this.docContent += '\n\n';
         }

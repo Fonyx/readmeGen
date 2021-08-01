@@ -27,8 +27,10 @@
 ## Content 
 
 - [Dependencies](#dependencies)
+- [Video](#video)
 - [Contributors](#contributors)
 - [License](#license)
+- [Usage](#usage)
 - [Testing](#testing)
 
 
@@ -45,6 +47,12 @@
 [pretty-error:^3.0.4](https://www.npmjs.com/package/pretty-error)
 
 
+
+## Usage
+
+```This time, some usage  ```
+
+## Video
 
 ![Screenshot](https://github.com/Fonyx/readmeGen/blob/main/assets/images/screencap.gif?raw=true "usage screencap")  
 
