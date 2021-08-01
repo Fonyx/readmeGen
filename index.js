@@ -214,7 +214,7 @@ class Readme{
     constructDocument(){
 
         // some questions need to be skipped in the contents section, they are in a list
-        let skippedContent = ['projectTitle','profileName', 'version', 'description', 'usage'];
+        let skippedContent = ['projectTitle','profileName', 'version', 'description'];
 
         // start with title
         this.docContent += `# Project: [${this.questions.projectTitle.content}](https://github.com/${this.questions.profileName.content}/${this.questions.projectTitle.content})`;
@@ -258,11 +258,6 @@ class Readme{
         // add dependencies as they aren't a question but part of the readme
         if(this.dependencies){
             this.docContent += `- [Dependencies](#dependencies)`;
-            this.docContent += '\n';
-        }
-        // add usageVideo as they aren't a question but part of the readme
-        if(this.usageScreencapPath){
-            this.docContent += `- [Usage](#usage)`;
             this.docContent += '\n';
         }
         // add contributors as they aren't a question but part of the readme
@@ -551,7 +546,7 @@ class Readme{
             console.log("\x1b[32m%s\x1b[32m", `screenshot path found`);
         } else {
             // log in red
-            console.log('\x1b[31m%s\x1b[0m', `screen capture path ${projectScreenshot} is empty, no usage gif available`)
+            console.log('\x1b[31m%s\x1b[0m', `screenshot path ${projectScreenshot} is empty, no project screenshot png available`)
         }
     }
     
@@ -597,7 +592,7 @@ function startNewReadmeProcess() {
             name: 'localRepoPath',
         },{
             type: 'list',
-            message: 'Manual mode or Automatic-node projects only?',
+            message: 'Manual mode or Automatic-(node projects only)?',
             name: 'mode',
             choices: ['manual', 'automatic'],
             default: 0,
@@ -611,11 +606,13 @@ function startNewReadmeProcess() {
         ])
         .then((answers) => {
             console.log(answers.localRepoPath);
-            if(answers.localRepoPath.trim() != ''){
+            let localPath = answers.localRepoPath.trim();
+            if(fs.existsSync(localPath)){
+                console.log('\x1b[32m%s\x1b[0m', 'Valid Path!')
                 var readme = new Readme(answers.localRepoPath.replace(/\\/g, '/'), answers.mode, answers.inputMethod);
             } else {
-                console.log('\x1b[31m%s\x1b[0m', 'Using default path for testing')
-                var readme = new Readme('C://Users//nicka//Documents//readmeGen', answers.mode, answers.inputMethod);
+                console.log('\x1b[31m%s\x1b[0m', 'No path provided');
+                throw new Error('Bad path provided');
             }
 
             readme.buildQuestions();

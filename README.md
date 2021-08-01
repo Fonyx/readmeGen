@@ -29,9 +29,9 @@
 ## Content 
 
 - [Dependencies](#dependencies)
-- [Usage](#usage)
 - [Contributors](#contributors)
 - [License](#license)
+- [Usage](#usage)
 - [Installation](#installation)
 - [Credits](#credits)
 - [Features](#features)
@@ -56,7 +56,7 @@
 
 ## Usage
 
-```srgb  ```
+```to use my project, do this  ```
 
 ![Screenshot](https://github.com/Fonyx/readmeGen/blob/main/assets/images/screencap.gif?raw=true "usage screencap")  
 
@@ -66,27 +66,27 @@
 
 ## Installation
 
-```srdtyb  ```
+```to install do that  ```
 
 ## Credits
 
-```rtb  ```
+```nick, usyd, trinity  ```
 
 ## Features
 
-```rtb  ```
+```automatic package reading, automatic github repo reading  ```
 
 ## Contributing
 
-```rtb  ```
+```closed to contributions, open to suggestions  ```
 
 ## Testing
 
-```rtb  ```
+```jest  ```
 
 ## Questions
 
-```rtb  ```
+```nick@fakwe.me  ```
 
 
 
