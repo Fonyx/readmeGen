@@ -16,30 +16,64 @@
 
 - [Version](#version)
 - [Description](#description)
-- [Dependencies](#dependencies)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Credits](#credits)
+- [Features](#features)
+- [Contributing](#contributing)
 - [Testing](#testing)
+- [Contact](#contact)
 
 
-## Dependencies
+## Installation
 
-```
-	inquirer:^6.3.1
-	markdown-it:^12.1.0
-	node-fetch:^2.6.1
-	pretty-error:^3.0.4
-  ```
+```insall me then run  ```
+
+
+
+### Dependencies  
+
+[inquirer:^6.3.1](https://www.npmjs.com/package/inquirer)
+
+[markdown-it:^12.1.0](https://www.npmjs.com/package/markdown-it)
+
+[node-fetch:^2.6.1](https://www.npmjs.com/package/node-fetch)
+
+[pretty-error:^3.0.4](https://www.npmjs.com/package/pretty-error)
+
+
+
+## Usage
+
+```use me after that  ```
 
 ## Usage Video
 
 ![Screenshot](https://github.com/Fonyx/readmeGen/blob/main/assets/images/screencap.gif?raw=true "usage screencap")  
 
+## Credits
+
+```me, my friend  ```
+
+## Features
+
+```feature1, feature2  ```
+
 ## Contributors 
 
 [Fonyx](https://github.com/Fonyx)
 
+## Contributing
+
+```no contributions  ```
+
 ## Testing
 
-```echo "Error: no test specified" && exit 1  ```
+```jest  ```
+
+## Contact
+
+```nick@fake.me  ```
 
 
 

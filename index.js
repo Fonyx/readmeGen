@@ -1,11 +1,7 @@
-const generateMarkdown = require('./utils/generateMarkdown');
-const md = require('markdown-it')();
 const fs = require('fs');
 const inquirer = require('inquirer');
 const fetch = require('node-fetch');
 const PrettyError = require('pretty-error');
-const MarkdownIt = require('markdown-it');
-var readme;
 var pe = new PrettyError();
 pe.start();
 
@@ -53,7 +49,6 @@ function noPackageError(){
 
 }
 noPackageError.prototype = new Error();
-
 
 class Question{
     /* here we use an object pass in with destructuring.
@@ -182,10 +177,10 @@ class Readme{
             version: new Question({type:'input',initMessage:'Project Version?\n',name:'Version', originValue:null}),
             license: new Question({type:'list',initMessage:'license type?\n',name:'License', choices:licenseChoices}),
             description: new Question({type:'input',initMessage:'Project Description?\n',name:'Description'}),
-            dependencies: new Question({type:'input',initMessage:'Add Dependencies More(comma separated)\n',name:'Dependencies', originValue : null}),
+            // dependencies: new Question({type:'input',initMessage:'Add Dependencies More(comma separated)\n',name:'Dependencies', originValue : null}),
             installation: new Question({type:'input',initMessage:'Installation steps\n',name:'Installation', originValue : null, packageValue:null, automatic:false}),
             usage: new Question({type:'input',initMessage:'Usage\n',name:'Usage', originValue : null, packageValue:null, automatic:false}),
-            credits: new Question({type:'input',initMessage:'Add any people, tech or institutes to credit (comma separated)\n',name:'Credits', originValue : null, packageValue:null, automatic:false}),
+            credits: new Question({type:'input',initMessage:'Add any people, tech or institutes to credit\n',name:'Credits', originValue : null, packageValue:null, automatic:false}),
             features: new Question({type:'input',initMessage:'What features does the project have?\n',name:'Features', originValue : null, packageValue:null, automatic:false}),
             contributing: new Question({type:'input',initMessage:'How to contribute to the project?\n',name:'Contributing', originValue : null, packageValue:null, automatic:false}),
             testing: new Question({type:'input',initMessage:'Project testing structure\n',name:'Testing', originValue : null, packageValue:null, automatic:false}),
@@ -275,7 +270,17 @@ class Readme{
         // Installation
         this.constructSection(null, this.questions.installation);
         // Dependencies
-        this.constructSection(null, this.questions.dependencies);
+        if(this.dependencies){
+            this.docContent += '\n\n';
+            this.docContent += '### Dependencies  \n\n';
+            for(let dependencyName in this.dependencies){
+                let dependency = this.dependencies[dependencyName];
+                this.docContent += `[${dependencyName}:${dependency}](https://www.npmjs.com/package/${dependencyName})`;
+                this.docContent += '\n\n';
+            }
+            this.docContent += '\n\n';
+        }  
+
         // Usage
         this.constructSection(null, this.questions.usage);
         if(this.usageScreencapPath){
@@ -416,12 +421,17 @@ class Readme{
                 this.questions.testing.packageValue = packageJson.scripts.test;
                 this.questions.profileName.packageValue = packageJson.author;
                 this.questions.license.packageValue = packageJson.license;
-                // removing "" and {} from stringified array then switch comma for new line and tab
-                this.questions.dependencies.packageValue = JSON.stringify(packageJson.dependencies)
-                    .replace(/"/g, '')
-                    .replace(/}/, '\n')
-                    .replace(/,/g,'\n\t')
-                    .replace(/{/, '\n\t')
+                // dependencies are no longer a question but automatically determined
+                if(packageJson.dependencies){
+                    this.dependencies = packageJson.dependencies;
+                    // removing "" and {} from stringified array then switch comma for new line and tab
+                    this.dependenciesStr = JSON.stringify(packageJson.dependencies).replace(/"/g, '').replace(/}/, '\n').replace(/,/g,'\n\t').replace(/{/, '\n\t')
+                    console.log("\x1b[32m%s\x1b[32m", `Found package dependencies ${this.dependenciesStr}`);
+                } else {
+                    // log in red
+                    console.log('\x1b[31m%s\x1b[0m', `No package dependencies found for ${this.localRepoPath}`);
+                }
+                    
         
                 this.comparePackageToOrigin();
             } else {
@@ -434,7 +444,7 @@ class Readme{
             if(err instanceof noPackageError){
                 console.log("\x1b[35m%s\x1b[35m",`Package.json file is absent from repo`);
             } else {
-                console.log('\x1b[31m%s\x1b[0m', 'Error processing pakcage values but package file does exist')
+                console.log('\x1b[31m%s\x1b[0m', 'Error processing package values but package file does exist')
             }
         }
 
@@ -463,15 +473,23 @@ class Readme{
         - derived from getGitRepoNameAndProfileFromUser()
         */
         fetch(`https://api.github.com/repos/${this.originOwnerProfile}/${this.originRepoName}`)
-        .then(res => res.json())
+        .then(function(res) {
+            if(res.ok){
+                return res.json()
+            } else {
+                console.log(`Readme process failed due to Github api call error - likely too many requests per hour`);
+                console.error(res.message);
+                throw new Error('Github Repo call failed')
+            }
+        })
         .then(data => {
             this.gitRepoDetails = data;
             this.getUsageScreencap();
             this.getProjectScreenshot();
-            this.deduceValuesFromRepo();
-        })
-        .catch((err) => {
-            console.log(err);
+            // in case the call to the repo failed, just leave details undefined
+            if(this.gitRepoDetails){
+                this.deduceValuesFromRepo();
+            }
         })
     }  
 
@@ -547,10 +565,12 @@ function startNewReadmeProcess() {
         .then((answers) => {
             console.log(answers.localRepoPath);
             if(answers.localRepoPath.trim() != ''){
-                readme = new Readme(answers.localRepoPath.replace(/\\/g, '/'), answers.mode);
+                var readme = new Readme(answers.localRepoPath.replace(/\\/g, '/'), answers.mode);
             } else {
-                readme = new Readme('C://Users//nicka//Documents//readmeGen', answers.mode);
+                console.log('\x1b[31m%s\x1b[0m', 'Using default path for testing')
+                var readme = new Readme('C://Users//nicka//Documents//readmeGen', answers.mode);
             }
+
             readme.buildQuestions();
             readme.getGitRepoNameAndProfileFromUser();
             readme.getLicenses();
