@@ -143,6 +143,69 @@ class Readme{
         this.projectScreenshotPath = undefined;
     }
 
+    addContentSectionToDocContent(){
+        // Make Contents and add
+        this.docContent +='## Content \n\n';
+        // add dependencies to content
+        if(this.dependencies){
+            this.docContent += `- [Dependencies](#dependencies)`;
+            this.docContent += '\n';
+        }
+        // add usage to content
+        if(this.contributors){
+            this.docContent += `- [Usage](#usage)`;
+            this.docContent += '\n';
+        }
+        // add video to content
+        if(this.usageScreencapPath){
+            this.docContent += `- [Video](#video)`;
+            this.docContent += '\n';
+        }
+
+
+        // add contributors to content
+        if(this.contributors){
+            this.docContent += `- [Contributors](#contributors)`;
+            this.docContent += '\n';
+        }
+
+        // add installation to content
+        if(this.contributors){
+            this.docContent += `- [Installation](#installation)`;
+            this.docContent += '\n';
+        }
+
+        // add credits to content
+        if(this.contributors){
+            this.docContent += `- [Credits](#credits)`;
+            this.docContent += '\n';
+        }
+
+        // add features to content
+        if(this.contributors){
+            this.docContent += `- [Features](#features)`;
+            this.docContent += '\n';
+        }
+
+        // add contributing to content
+        if(this.contributors){
+            this.docContent += `- [Contributing](#contributing)`;
+            this.docContent += '\n';
+        }
+
+        // add testing to content
+        if(this.contributors){
+            this.docContent += `- [Testing](#testing)`;
+            this.docContent += '\n';
+        }
+
+        // add questions to content
+        if(this.contributors){
+            this.docContent += `- [Questions](#questions)`;
+            this.docContent += '\n';
+        }
+    }
+
     async askQuestions(){
         for (let name in this.questions){
             let currQ = this.questions[name];
@@ -213,15 +276,12 @@ class Readme{
 
     constructDocument(){
 
-        // some questions need to be skipped in the contents section, they are in a list
-        let skippedContent = ['projectTitle','profileName', 'version', 'description'];
-
         // start with title
         this.docContent += `# Project: [${this.questions.projectTitle.content}](https://github.com/${this.questions.profileName.content}/${this.questions.projectTitle.originValue})`;
         this.docContent += '\n\n';
         
         // version
-        this.constructSection(null, this.questions.version);
+        this.constructSection(this.questions.version.name, this.questions.version.content);
         
         // make and show badges,show license, show languages used, show commit frequency, show contributors
         this.docContent += `![badmath](https://img.shields.io/github/license/${this.questions.profileName.content}/${this.originRepoName})  `;
@@ -231,16 +291,15 @@ class Readme{
         this.docContent += '\n\n';
         
         // Description
-        this.constructSection(null, this.questions.description);
+        this.constructSection(this.questions.description.name, this.questions.description.content);
         if(this.projectScreenshotPath){
             this.docContent += `![Alt text](https://github.com/${this.questions.profileName.content}/${this.originRepoName}/blob/main/assets/images/screenshot.PNG?raw=true "project screenshot")  `;
             this.docContent += '\n\n';
         }
 
         // License
-        this.constructSection(null, this.questions.license); 
+        this.constructSection(this.questions.license.name, this.questions.license.content); 
         if(this.licenseDescription && this.licensePermissions){
-            this.docContent += '\n\n';
             this.docContent += '### Details  \n\n';
             this.docContent += '```';
             this.docContent += this.licenseDescription+'  ';
@@ -251,37 +310,10 @@ class Readme{
             this.docContent += this.licensePermissions.toString()+'  ';
             this.docContent += '```';
             this.docContent += '\n\n';
-        }           
+        }    
+        // content section is all hardcoded
+        this.addContentSectionToDocContent();
 
-        // Make Contents and add
-        this.docContent +='## Content \n\n';
-        // add dependencies as they aren't a question but part of the readme
-        if(this.dependencies){
-            this.docContent += `- [Dependencies](#dependencies)`;
-            this.docContent += '\n';
-        }
-        // add video as it isn't a question
-        if(this.usageScreencapPath){
-            this.docContent += `- [Video](#video)`;
-            this.docContent += '\n';
-        }
-        // add contributors as they aren't a question but part of the readme
-        if(this.contributors){
-            this.docContent += `- [Contributors](#contributors)`;
-            this.docContent += '\n';
-        }
-        for (let qname in this.questions){
-            let question = this.questions[qname];
-            // if question has content
-            if (question.content){
-                // if the question needs to be in the contents section
-                if(!skippedContent.includes(qname)){
-                    let contentString = `- [${question.name}](#${question.name.toLowerCase()})`;
-                    this.docContent += contentString;
-                    this.docContent += '\n';
-                }
-            }
-        }
         this.docContent += '\n\n';
         // Dependencies
         if(this.dependencies){
@@ -295,7 +327,7 @@ class Readme{
             this.docContent += '\n\n';
         }  
         // Usage
-        this.constructSection(null, this.questions.usage);
+        this.constructSection(this.questions.usage.name, this.questions.usage.content);
         if(this.usageScreencapPath){
             this.docContent +='## Video\n\n';
             this.docContent += `![Screenshot](https://github.com/${this.questions.profileName.content}/${this.originRepoName}/blob/main/assets/images/screencap.gif?raw=true "usage screencap")  `;
@@ -313,38 +345,34 @@ class Readme{
         }
         
         // Installation
-        this.constructSection(null, this.questions.installation);
+        this.constructSection(this.questions.installation.name, this.questions.installation.content);
 
         // Credits
-        this.constructSection(null, this.questions.credits);
+        this.constructSection(this.questions.credits.name, this.questions.credits.content);
 
         // Features
-        this.constructSection(null, this.questions.features);
+        this.constructSection(this.questions.features.name, this.questions.features.content);
 
         // Contribute
-        this.constructSection(null, this.questions.contributing);
+        this.constructSection(this.questions.contributing.name, this.questions.contributing.content);
         
         // Testing details
-        this.constructSection(null, this.questions.testing);
+        this.constructSection(this.questions.testing.name, this.questions.testing.content);
 
         // Contact and profile github link
-        this.constructSection(null, this.questions.questions);
+        this.constructSection(this.questions.questions.name, this.questions.questions.content);
         this.docContent += '\n\n';
         this.docContent += '## Checkout my github account '+`[${this.questions.profileName.content}](https://github.com/${this.questions.profileName.content})` 
         this.docContent += '\n\n';
         this.docContent += '\n\n';
     }
 
-    constructSection(title, question){
+    constructSection(sectionName, sectionContent){
         // if title is specified, will treat section as document title section, otherwise just a normal section ##
-        if (question.content){
-            if(title){
-                this.docContent += `# title`;
-            } else {
-                this.docContent += `## ${question.name}`;
-            }
+        if (sectionContent){
+            this.docContent += `## ${sectionName}`;
             this.docContent += '\n\n';
-            this.docContent += question.content+'  ';
+            this.docContent += sectionContent+'  ';
             this.docContent += '\n\n';
         }
     }
