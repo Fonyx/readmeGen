@@ -96,17 +96,6 @@ class Question{
                 this.message = this.initMessage + 'Auto Read Found: ' + this.packageValue + '\n';
             }
         }
-        // if(mode === "manual"){
-        //     // makes a message out of the origin and package values
-        //     if(this.originValue !== null){
-        //         this.message = this.initMessage + 'Auto Read Found: ' + this.originValue + '\n';
-        //     }else {
-        //         this.message = this.initMessage + 'Auto Read Found: ' + this.packageValue + '\n';
-        //     }
-        // // if the field is a manual field
-        // } else if(!this.automatic){
-        //     this.message = this.initMessage;
-        // }
     }
 
     async prompt(){
@@ -126,10 +115,12 @@ class Question{
 }
 
 class Readme{
-    constructor(localRepoPath, mode, inputMethod){
+    constructor(localRepoPath, mode, inputMethod, syncPackage){
         this.localRepoPath = localRepoPath;
         this.mode = mode;
         this.inputMethod = inputMethod;
+        this.syncPackage = syncPackage;
+        this.packageJson = undefined;
         this.originRepoName;
         this.originOwnerProfile;
         this.gitRepoDetails;
@@ -162,7 +153,6 @@ class Readme{
             this.docContent += '\n';
         }
 
-
         // add contributors to content
         if(this.contributors){
             this.docContent += `- [Contributors](#contributors)`;
@@ -170,37 +160,37 @@ class Readme{
         }
 
         // add installation to content
-        if(this.contributors){
+        if(this.questions.installation){
             this.docContent += `- [Installation](#installation)`;
             this.docContent += '\n';
         }
 
         // add credits to content
-        if(this.contributors){
+        if(this.questions.credits){
             this.docContent += `- [Credits](#credits)`;
             this.docContent += '\n';
         }
 
         // add features to content
-        if(this.contributors){
+        if(this.questions.features){
             this.docContent += `- [Features](#features)`;
             this.docContent += '\n';
         }
 
         // add contributing to content
-        if(this.contributors){
+        if(this.questions.contributing){
             this.docContent += `- [Contributing](#contributing)`;
             this.docContent += '\n';
         }
 
         // add testing to content
-        if(this.contributors){
+        if(this.questions.testing){
             this.docContent += `- [Testing](#testing)`;
             this.docContent += '\n';
         }
 
         // add questions to content
-        if(this.contributors){
+        if(this.questions.questions){
             this.docContent += `- [Questions](#questions)`;
             this.docContent += '\n';
         }
@@ -260,18 +250,24 @@ class Readme{
         */
         for (var name in this.questions){
             // check both values are valid for comparison
-            if (this.questions[name].packageValue !== null && this.questions[name].originValue !== null){
-                if(this.questions[name].packageValue !== this.questions[name].originValue){
+            let packageValue = this.questions[name].packageValue;
+            let originValue = this.questions[name].originValue;
+            if (packageValue !== null && originValue !== null){
+                if(packageValue !== originValue){
                     // https://stackoverflow.com/questions/9781218/how-to-change-node-jss-console-font-color
                     console.log('\x1b[31m%s\x1b[0m', `${name} has inconsistent derived values`);
-                    console.log('\x1b[31m%s\x1b[0m', `\tOriginRepo: ${this.questions[name].originValue}`);
-                    console.log('\x1b[31m%s\x1b[0m', `\tPackage.json: ${this.questions[name].packageValue}`);
+                    console.log('\x1b[31m%s\x1b[0m', `\tOriginRepo: ${originValue}`);
+                    console.log('\x1b[31m%s\x1b[0m', `\tPackage.json: ${packageValue}`);
                     console.log('\x1b[31m%s\x1b[0m', '\tTake better care of your package file, for now, using the originRepo version, consult readme for more details');
+                    if(this.mode==='manual'){
+                        this.updatePackagePrompt(name, packageValue, originValue);
+                    }
+                } else {
+                    // question can't be compared
                 }
-            } else {
-                // question can't be compared
             }
         }
+        this.writePackageToFile();
     }
 
     constructDocument(){
@@ -449,9 +445,11 @@ class Readme{
                 // log in red
                 console.log('\x1b[31m%s\x1b[0m', `No github contributors for ${this.localRepoPath}`);
             }
-            this.deduceValuesFromPackage();
         })
         .catch(err => console.error(err));
+
+        this.deduceValuesFromPackage();
+
     }
 
     deduceValuesFromPackage(){
@@ -463,19 +461,19 @@ class Readme{
         try{
             if(fs.existsSync(this.localRepoPath+'/package.json')){
                 let rawPackage = fs.readFileSync(this.localRepoPath+'/package.json', {encoding:'utf-8', flag:'r'});
-                let packageJson = JSON.parse(rawPackage);
+                this.packageJson = JSON.parse(rawPackage);
                 // set the packageValues for the corresponding question elements
-                this.questions.projectTitle.packageValue = packageJson.name;
-                this.questions.version.packageValue = packageJson.version;
-                this.questions.description.packageValue = packageJson.description;
-                this.questions.testing.packageValue = packageJson.scripts.test;
-                this.questions.profileName.packageValue = packageJson.author;
-                this.questions.license.packageValue = packageJson.license;
+                this.questions.projectTitle.packageValue = this.packageJson.name;
+                this.questions.version.packageValue = this.packageJson.version;
+                this.questions.description.packageValue = this.packageJson.description;
+                this.questions.testing.packageValue = this.packageJson.scripts.test;
+                this.questions.profileName.packageValue = this.packageJson.author;
+                this.questions.license.packageValue = this.packageJson.license;
                 // dependencies are no longer a question but automatically determined
-                if(packageJson.dependencies){
-                    this.dependencies = packageJson.dependencies;
+                if(this.packageJson.dependencies){
+                    this.dependencies = this.packageJson.dependencies;
                     // removing "" and {} from stringified array then switch comma for new line and tab
-                    this.dependenciesStr = JSON.stringify(packageJson.dependencies).replace(/"/g, '').replace(/}/, '\n').replace(/,/g,'\n\t').replace(/{/, '\n\t')
+                    this.dependenciesStr = JSON.stringify(this.packageJson.dependencies).replace(/"/g, '').replace(/}/, '\n').replace(/,/g,'\n\t').replace(/{/, '\n\t')
                     console.log("\x1b[32m%s\x1b[32m", `Found package dependencies ${this.dependenciesStr}`);
                 } else {
                     // log in red
@@ -495,6 +493,7 @@ class Readme{
                 console.log("\x1b[35m%s\x1b[35m",`Package.json file is absent from repo`);
             } else {
                 console.log('\x1b[31m%s\x1b[0m', 'Error processing package values but package file does exist')
+                console.error(err);
             }
         }
 
@@ -592,7 +591,44 @@ class Readme{
         }
     }
 
-   async saveDocument(){
+    updatePackagePrompt(parameter, packageValue, originValue){
+        // case where user wants to override local package with origin value
+        if(this.syncPackage){
+            // this.questions.projectTitle.packageValue = this.packageJson.name;
+            // this.questions.version.packageValue = this.packageJson.version;
+            // this.questions.description.packageValue = this.packageJson.description;
+            // this.questions.testing.packageValue = this.packageJson.scripts.test;
+            // this.questions.profileName.packageValue = this.packageJson.author;
+            // this.questions.license.packageValue = this.packageJson.license;
+            switch (parameter){
+                case 'projectTitle':
+                    this.packageJson.name = originValue;
+                    break
+                case 'version':
+                    this.packageJson.version = originValue;
+                    break
+                case 'description':
+                    this.packageJson.description = originValue;
+                    break
+                case 'testing':
+                    this.packageJson.scripts.test = originValue;
+                    break
+                case 'profileName':
+                    this.packageJson.author = originValue;
+                    break
+                case 'license':
+                    this.packageJson.license = originValue;
+                    break
+            }
+            console.log('\x1b[35m%s\x1b[0m', `User overwrote parameter ${parameter}: package value was ${packageValue} with value: ${originValue}`);
+        // case where user wants to ignore the difference
+        } else {
+            console.log('\x1b[34m%s\x1b[0m', 'User ignored clash');
+        }
+    }
+    
+
+    async saveDocument(){
         if(fs.existsSync('README.md')){
             await inquirer.prompt({
                 type: 'confirm',
@@ -614,6 +650,17 @@ class Readme{
             console.log('Written to file successfully');
         }
     }
+
+    writePackageToFile(){
+        try{
+            fs.writeFileSync('package.json', JSON.stringify(this.packageJson, null, 2), {encoding: 'utf-8', flag: 'w'});
+            console.log('\x1b[35m%s\x1b[0m', 'Updated package.json file successfully');
+        } catch{(error) => {
+            console.log('\x1b[31m%s\x1b[0m', 'Failed to update package.json');
+            console.error(error);
+        }}
+    }
+
 }
 
 function startNewReadmeProcess() {
@@ -634,14 +681,20 @@ function startNewReadmeProcess() {
             name: 'inputMethod',
             choices: ['input', 'editor'],
             default: 0,
+        },{
+            type: 'confirm',
+            message: `Would you like to synchronize the local package to the the origin repo values?`,
+            name: 'syncPackage',
+            default: false,
         }
         ])
         .then((answers) => {
             console.log(answers.localRepoPath);
             let localPath = answers.localRepoPath.trim();
+
             if(fs.existsSync(localPath)){
                 console.log('\x1b[32m%s\x1b[0m', 'Valid Path!')
-                var readme = new Readme(answers.localRepoPath.replace(/\\/g, '/'), answers.mode, answers.inputMethod);
+                var readme = new Readme(answers.localRepoPath.replace(/\\/g, '/'), answers.mode, answers.inputMethod, answers.syncPackage);
             } else {
                 console.log('\x1b[31m%s\x1b[0m', 'No path provided');
                 throw new Error('Bad path provided');

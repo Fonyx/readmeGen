@@ -1,13 +1,13 @@
 {
-  "name": "static-site",
+  "name": "readmeGen",
   "version": "1.0.0",
-  "description": "",
+  "description": "A node project that prompts user for details",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Fonyx",
+  "license": "MIT License",
   "dependencies": {
     "inquirer": "^6.3.1",
     "markdown-it": "^12.1.0",

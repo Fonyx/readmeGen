@@ -16,11 +16,11 @@ A node project that prompts user for details
 
 MIT License  
 
-#### Details  
+### Details  
 
 ```A short and simple permissive license with conditions only requiring preservation of copyright and license notices. Licensed works, modifications, and larger works may be distributed under different terms and without source code.  ```
 
-#### Permissions  
+### Permissions  
 
 ```commercial-use,modifications,distribution,private-use  ```
 
@@ -54,7 +54,7 @@ MIT License
 
 ## Usage
 
-srtb  
+sretb  
 
 ## Video
 
@@ -66,27 +66,27 @@ srtb
 
 ## Installation
 
-rsdtb  
+sertb  
 
 ## Credits
 
-ertb  
+srtb  
 
 ## Features
 
-rtbn  
+srtb  
 
 ## Contributing
 
-ertybn  
+srtb  
 
 ## Testing
 
-retyn  
+srtb  
 
 ## Questions
 
-ertyn  
+rsbnt  
 
 
 
