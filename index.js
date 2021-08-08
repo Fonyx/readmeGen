@@ -250,10 +250,10 @@ class Readme{
         */
         for (var name in this.questions){
             // check both values are valid for comparison
-            let packageValue = this.questions[name].packageValue.trim();
-            let originValue = this.questions[name].originValue.trim();
+            let packageValue = this.questions[name].packageValue;
+            let originValue = this.questions[name].originValue;
             if (packageValue !== null && originValue !== null){
-                if(packageValue !== originValue){
+                if(packageValue.trim() !== originValue.trim()){
                     // https://stackoverflow.com/questions/9781218/how-to-change-node-jss-console-font-color
                     console.log('\x1b[31m%s\x1b[0m', `${name} has inconsistent derived values`);
                     console.log('\x1b[31m%s\x1b[0m', `\tOriginRepo: ${originValue}`);
