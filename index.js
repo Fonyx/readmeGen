@@ -250,8 +250,8 @@ class Readme{
         */
         for (var name in this.questions){
             // check both values are valid for comparison
-            let packageValue = this.questions[name].packageValue;
-            let originValue = this.questions[name].originValue;
+            let packageValue = this.questions[name].packageValue.trim();
+            let originValue = this.questions[name].originValue.trim();
             if (packageValue !== null && originValue !== null){
                 if(packageValue !== originValue){
                     // https://stackoverflow.com/questions/9781218/how-to-change-node-jss-console-font-color
@@ -259,9 +259,8 @@ class Readme{
                     console.log('\x1b[31m%s\x1b[0m', `\tOriginRepo: ${originValue}`);
                     console.log('\x1b[31m%s\x1b[0m', `\tPackage.json: ${packageValue}`);
                     console.log('\x1b[31m%s\x1b[0m', '\tTake better care of your package file, for now, using the originRepo version, consult readme for more details');
-                    if(this.mode==='manual'){
-                        this.updatePackagePrompt(name, packageValue, originValue);
-                    }
+                    this.updatePackagePrompt(name, packageValue, originValue);
+                    
                 } else {
                     // question can't be compared
                 }
@@ -603,24 +602,29 @@ class Readme{
             switch (parameter){
                 case 'projectTitle':
                     this.packageJson.name = originValue;
+                    console.log('\x1b[35m%s\x1b[0m', `User overwrote package Name: package value was ${packageValue} with value: ${originValue}`);
                     break
                 case 'version':
                     this.packageJson.version = originValue;
+                    console.log('\x1b[35m%s\x1b[0m', `User overwrote package version: package value was ${packageValue} with value: ${originValue}`);
                     break
                 case 'description':
                     this.packageJson.description = originValue;
+                    console.log('\x1b[35m%s\x1b[0m', `User overwrote package description: package value was ${packageValue} with value: ${originValue}`);
                     break
                 case 'testing':
                     this.packageJson.scripts.test = originValue;
+                    console.log('\x1b[35m%s\x1b[0m', `User overwrote package testing: package value was ${packageValue} with value: ${originValue}`);
                     break
                 case 'profileName':
                     this.packageJson.author = originValue;
+                    console.log('\x1b[35m%s\x1b[0m', `User overwrote package author: package value was ${packageValue} with value: ${originValue}`);
                     break
                 case 'license':
                     this.packageJson.license = originValue;
+                    console.log('\x1b[35m%s\x1b[0m', `User overwrote package license: package value was ${packageValue} with value: ${originValue}`);
                     break
             }
-            console.log('\x1b[35m%s\x1b[0m', `User overwrote parameter ${parameter}: package value was ${packageValue} with value: ${originValue}`);
         // case where user wants to ignore the difference
         } else {
             console.log('\x1b[34m%s\x1b[0m', 'User ignored clash');
@@ -629,7 +633,7 @@ class Readme{
     
 
     async saveDocument(){
-        let localReadmePath = this.localRepoPath+'README.md';
+        let localReadmePath = this.localRepoPath+'/README.md';
         if(fs.existsSync(localReadmePath)){
             await inquirer.prompt({
                 type: 'confirm',
@@ -654,8 +658,9 @@ class Readme{
 
     writePackageToFile(){
         try{
-            fs.writeFileSync('package.json', JSON.stringify(this.packageJson, null, 2), {encoding: 'utf-8', flag: 'w'});
-            console.log('\x1b[35m%s\x1b[0m', 'Updated package.json file successfully');
+            let targetPackagePath = this.localRepoPath+'/package.json';
+            fs.writeFileSync(targetPackagePath, JSON.stringify(this.packageJson, null, 2), {encoding: 'utf-8', flag: 'w'});
+            console.log('\x1b[35m%s\x1b[0m', `Updated package.json file successfully @ ${targetPackagePath}`);
         } catch{(error) => {
             console.log('\x1b[31m%s\x1b[0m', 'Failed to update package.json');
             console.error(error);
