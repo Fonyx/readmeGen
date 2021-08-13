@@ -288,7 +288,7 @@ class Readme{
         // Description
         this.constructSection(this.questions.description.name, this.questions.description.content);
         if(this.showScreencapPath){
-            this.docContent += `![Alt text](https://github.com/${this.questions.profileName.content}/${this.originRepoName}/blob/main/assets/images/screenshot.PNG?raw=true "project screenshot")  `;
+            this.docContent += `![Alt text](https://github.com/${this.questions.profileName.content}/${this.originRepoName}/blob/main/assets/images/show.gif?raw=true "show capture gif")  `;
             this.docContent += '\n\n';
         }
 
@@ -325,7 +325,7 @@ class Readme{
         this.constructSection(this.questions.usage.name, this.questions.usage.content);
         if(this.usageScreencapPath){
             this.docContent +='## Video\n\n';
-            this.docContent += `![Screenshot](https://github.com/${this.questions.profileName.content}/${this.originRepoName}/blob/main/assets/images/screencap.gif?raw=true "usage screencap")  `;
+            this.docContent += `![Screenshot](https://github.com/${this.questions.profileName.content}/${this.originRepoName}/blob/main/assets/images/usage.gif?raw=true "usage screencap gif")  `;
             this.docContent += '\n\n';
         }
 
