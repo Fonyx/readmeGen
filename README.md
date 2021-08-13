@@ -15,7 +15,7 @@ Bearing that in mind, some avenues for readme customization have been left unexp
 In the process of building this I learned a lot about distinguishing vanity metrics from utility metrics. 
 I have added some visual metrics but where possible, I have opted for meaningful design choices over flash.  
 
-![Alt text](https://github.com/Fonyx/readmeGen/blob/main/assets/images/screenshot.PNG?raw=true "project screenshot")  
+![Alt text](https://github.com/Fonyx/readmeGen/blob/main/assets/images/show.gif?raw=true "project show gif")  
 
 ## License
 
@@ -82,8 +82,8 @@ MIT License
 
 Background collections:
 -github repo contributors
--assets/images/screenshot.png
--assets/images/screengrab.gif 
+-assets/images/show.gif
+-assets/images/usage.gif 
 
 NOTE: if there is a package.json file but any of the readPackage.json commands find an empty value or a 
 clashed value with the origin repo, console alert package.json doesn't match origin repo details
@@ -94,7 +94,7 @@ backup: https://drive.google.com/file/d/1ID5mpRL1XC7LNLoeJ5dcRSGoojVUEL8W/view?u
 
 ## Video
 
-![Screenshot](https://github.com/Fonyx/readmeGen/blob/main/assets/images/screencap.gif?raw=true "usage screencap")  
+![Screenshot](https://github.com/Fonyx/readmeGen/blob/main/assets/images/usage.gif?raw=true "usage screencap")  
 
 ## Contributors 
 
@@ -106,7 +106,7 @@ backup: https://drive.google.com/file/d/1ID5mpRL1XC7LNLoeJ5dcRSGoojVUEL8W/view?u
 2. Checkout project
 3. Run npm install to download dependencies
 4. Read project readme for details on repo structure, specifically:
-	- screenshot and screengrab files in assets/images/screenshot.png + screencap.gif
+	- show and usage screengrab gif files in assets/images/show.gif + usage.gif
   
 
 ## Credits
@@ -118,7 +118,7 @@ Personal Project, no specific credits
 1: Automatic reading of git repo
 2: Automatic reading of package.json file
 3: Linking of contributors, owner and dependencies to their github and npm repositories
-4: Embedding of screenshot and screencap files
+4: Embedding of gif files for show and usage
 5: Synchronize local package file with repository details  
 
 ## Contributing

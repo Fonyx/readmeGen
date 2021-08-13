@@ -131,7 +131,7 @@ class Readme{
         this.docContent = '';
         this.questions = undefined;
         this.usageScreencapPath = undefined;
-        this.projectScreenshotPath = undefined;
+        this.showScreencapPath = undefined;
     }
 
     addContentSectionToDocContent(){
@@ -287,7 +287,7 @@ class Readme{
         
         // Description
         this.constructSection(this.questions.description.name, this.questions.description.content);
-        if(this.projectScreenshotPath){
+        if(this.showScreencapPath){
             this.docContent += `![Alt text](https://github.com/${this.questions.profileName.content}/${this.originRepoName}/blob/main/assets/images/screenshot.PNG?raw=true "project screenshot")  `;
             this.docContent += '\n\n';
         }
@@ -557,26 +557,26 @@ class Readme{
     }
 
     getUsageScreencap(){
-        let usageScreencapPath = this.localRepoPath+'//assets//images//screencap.gif';
+        let usageScreencapPath = this.localRepoPath+'//assets//images//usage.gif';
         if(fs.existsSync(usageScreencapPath)){
             this.usageScreencapPath = usageScreencapPath;
             // log in green
-            console.log("\x1b[32m%s\x1b[32m", `screen capture path found`);
+            console.log("\x1b[32m%s\x1b[32m", `usage gif found`);
         } else {
             // log in red
-            console.log('\x1b[31m%s\x1b[0m', `screen capture path ${usageScreencapPath} is empty, no usage gif available`)
+            console.log('\x1b[31m%s\x1b[0m', `usage path ${usageScreencapPath} is empty, no usage gif available`)
         }
     }
     
     getProjectScreenshot(){
-        let projectScreenshot = this.localRepoPath+'//assets//images//screenshot.png';
-        if(fs.existsSync(projectScreenshot)){
-            this.projectScreenshotPath = projectScreenshot;
+        let showcapPath = this.localRepoPath+'//assets//images//show.gif';
+        if(fs.existsSync(showcapPath)){
+            this.showScreencapPath = showcapPath;
             // log in green
-            console.log("\x1b[32m%s\x1b[32m", `screenshot path found`);
+            console.log("\x1b[32m%s\x1b[32m", `show gif path found`);
         } else {
             // log in red
-            console.log('\x1b[31m%s\x1b[0m', `screenshot path ${projectScreenshot} is empty, no project screenshot png available`)
+            console.log('\x1b[31m%s\x1b[0m', `show gif path ${projectScreenshot} is empty, no project show gif available`)
         }
     }
     
