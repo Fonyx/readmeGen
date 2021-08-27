@@ -576,7 +576,7 @@ class Readme{
             console.log("\x1b[32m%s\x1b[32m", `show gif path found`);
         } else {
             // log in red
-            console.log('\x1b[31m%s\x1b[0m', `show gif path ${projectScreenshot} is empty, no project show gif available`)
+            console.log('\x1b[31m%s\x1b[0m', `show gif path ${showcapPath} is empty, no project show gif available`)
         }
     }
     
@@ -634,6 +634,7 @@ class Readme{
 
     async saveDocument(){
         let localReadmePath = this.localRepoPath+'/README.md';
+        let localReadmeBackup = this.localRepoPath+'/BackupReadme.md'
         if(fs.existsSync(localReadmePath)){
             await inquirer.prompt({
                 type: 'confirm',
@@ -645,7 +646,8 @@ class Readme{
                     fs.writeFileSync(localReadmePath, this.docContent, {encoding: 'utf-8', flag: 'w'});
                     console.log('\x1b[32m%s\x1b[0m', `Successfully written file to ${localReadmePath}`);
                 } else {
-                    console.log('\x1b[31m%s\x1b[0m', 'File abandoned by user')
+                    fs.writeFileSync(localReadmeBackup, this.docContent, {encoding: 'utf-8', flag: 'w'});
+                    console.log('\x1b[31m%s\x1b[0m', `File saved as backup to ${localReadmeBackup}`);
                 }
             }).catch((err) => {
                 console.error(err)
