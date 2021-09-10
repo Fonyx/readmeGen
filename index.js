@@ -520,7 +520,9 @@ class Readme{
         Gets github details for repo using originOwnerProfile and originRepoName 
         - derived from getGitRepoNameAndProfileFromUser()
         */
-        fetch(`https://api.github.com/repos/${this.originOwnerProfile}/${this.originRepoName}`)
+       let queryString = `https://api.github.com/repos/${this.originOwnerProfile}/${this.originRepoName}`;
+
+        fetch(queryString)
         .then(function(res) {
             if(res.ok){
                 return res.json()
