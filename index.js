@@ -634,7 +634,7 @@ class Readme{
 
     async saveDocument(){
         let localReadmePath = this.localRepoPath+'/README.md';
-        let localReadmeBackup = this.localRepoPath+'/BackupReadme.md'
+        let localReadmeBackup = this.localRepoPath+'/BackupReadme.md';
         if(fs.existsSync(localReadmePath)){
             await inquirer.prompt({
                 type: 'confirm',
