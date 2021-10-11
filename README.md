@@ -81,9 +81,9 @@ MIT License
 - tests: [readPackage-scripts.test], UserInput
 
 Background collections:
--github repo contributors
--assets/images/show.gif
--assets/images/usage.gif 
+-github repo contributors  
+-assets/images/show.gif  W800pxxH600px
+-assets/images/usage.gif  W800pxxH600px
 
 NOTE: if there is a package.json file but any of the readPackage.json commands find an empty value or a 
 clashed value with the origin repo, console alert package.json doesn't match origin repo details
